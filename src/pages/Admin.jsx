@@ -3,26 +3,23 @@ import NavState from '../contex/navState';
 import MainMenuAdmin from '../components/MainMenuAdmin';
 
 const Container = styled.div`
-  background-color: #fff5;
-  height: 800px;
-  padding-top: 150px;
+  background-color: #000;
+  padding-top: 70px;
   display: flex;
   justify-content: center;
+  width: 1500px;
 `;
 const Wrapper = styled.div`
-  background: #fff5;
+  background: #000;
 `;
 
 function Admin() {
   return (
-    <Wrapper>
+    <div className="wrapper">
       <NavState>
         <MainMenuAdmin />
       </NavState>
-      <Container>
-        <h1>Добро пожаловать, Администратор</h1>
-      </Container>
-    </Wrapper>
+    </div>
   );
 }
 

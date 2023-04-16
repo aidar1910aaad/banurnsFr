@@ -67,24 +67,32 @@ function ReqManagerReq() {
   };
 
   return (
-    <Wrapper>
+    <div className="wrapper">
       <NavState>
         <MainMenuReqManager />
       </NavState>
-      <Container>
-        <h1>Поступившие заявки</h1>
-        <div className="app">
-          <OpenedReqData
-            handleShow={handleShow}
-            handleDelete={handleDelete}
-            opened={appState.opened}
-          />
+      <div className="container">
+        <div>
+          <h1 className="h1-text">Поступившие заявки</h1>
         </div>
-        <button onClick={handleSubmit} type="submit">
-          Закрыть все заявки
-        </button>
-      </Container>
-    </Wrapper>
+        <div className="userAdd">
+          <div className="app">
+            <OpenedReqData
+              handleShow={handleShow}
+              handleDelete={handleDelete}
+              opened={appState.opened}
+            />
+          </div>
+          <div className="flexbox">
+            <div className="center-side">
+              <button className="buttonadm" onClick={handleSubmit} type="submit">
+                Закрыть все заявки
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

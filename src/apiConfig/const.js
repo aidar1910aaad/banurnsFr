@@ -1,3 +1,3 @@
-const baseURL = `http://localhost:8088/api`;
+const baseURL = `http://skladbanurns-env.eba-hrypxvtv.us-east-1.elasticbeanstalk.com/api`;
 
 export default baseURL;

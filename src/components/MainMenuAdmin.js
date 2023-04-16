@@ -15,8 +15,8 @@ const Navbar = styled.div`
   max-width: 100%;
   margin: 0px;
   align-items: center;
-  background: #222222 none repeat scroll 0% 0%;
-  color: rgb(248, 248, 248);
+  background: #ededed none repeat scroll 0% 0%;
+  color: #5a738e;
   min-width: 0px;
   min-height: 0px;
   flex-direction: row;
@@ -24,6 +24,7 @@ const Navbar = styled.div`
   padding: 6px 20px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 16px;
   z-index: 500;
+  border-bottom: 1px #d9dee4;
 `;
 
 const Flexbox = styled.div`
@@ -35,7 +36,7 @@ const Flexbox = styled.div`
 const Logoutbtn = styled.a`
   outline: none;
   text-decoration: none;
-  color: #fff;
+  color: #5a738e;
 `;
 
 const MainMenuAdmin = () => {

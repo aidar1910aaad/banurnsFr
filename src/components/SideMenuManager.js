@@ -45,21 +45,21 @@ export const MenuLink = styled.a`
   text-decoration: none;
   color: #fff;
   cursor: default;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 120%;
   font-weight: 50;
   background-color: #2a3f54;
-  border: none;
+  border-bottom: 1px solid #000;
   outline: none;
+
   border-size: 10px;
-  border-color: #000;
 
   :hover {
     background-position: 90% 50%;
     color: #fff;
-    border-bottom: 10px #fff;
+    border-bottom: 1px solid #5a738e;
     opacity: 0.9;
-    background: #222;
+    background: #374a5e;
     transition: 0.2s;
   }
 `;
@@ -78,7 +78,6 @@ SideMenuManager.defaultProps = {
   children: (
     <>
       <MenuLink href="/SalesManager/Req">Создать заявку</MenuLink>
-      <MenuLink href="/SalesManager/Sended">Отправленные заявки</MenuLink>
     </>
   ),
 };

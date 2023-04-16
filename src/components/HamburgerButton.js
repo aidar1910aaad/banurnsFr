@@ -17,8 +17,8 @@ const MenuButton = styled.button`
   }
 
   :focus {
-    border: medium none #000;
-    box-shadow: #000 0 0 2px 2px;
+    border: medium none #374a5e;
+    box-shadow: #374a5e 0 0 2px 2px;
     outline: 0;
   }
 

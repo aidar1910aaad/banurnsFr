@@ -5,14 +5,7 @@ import NavState from '../contex/navState';
 import baseURL from '../apiConfig/const';
 import axios from 'axios';
 import ClosedReqData from '../components/ClosedReqData';
-
-const Container = styled.div`
-  background: #fff5;
-  height: 800px;
-  padding-top: 70px;
-  padding-left: 300px;
-`;
-const Wrapper = styled.div``;
+import AllClosedReq from '../components/AllClosedReq';
 
 function ReqManagerClosed() {
   const token = localStorage.getItem('Token');
@@ -58,21 +51,28 @@ function ReqManagerClosed() {
   };
 
   return (
-    <Wrapper>
+    <div className="wrapper">
       <NavState>
         <MainMenuReqManager />
       </NavState>
-      <Container>
-        <h1 className="h3">Закрытые заявки</h1>
-        <div className="app">
-          <ClosedReqData
-            handleShow={handleShow}
-            handleDelete={handleDelete}
-            closed={appState.closed}
-          />
+      <div className="container">
+        <div>
+          <h1 className="h1-text">Закрытые заявки</h1>
         </div>
-      </Container>
-    </Wrapper>
+        <div className="userAdd">
+          <div className="app">
+            <ClosedReqData
+              handleShow={handleShow}
+              handleDelete={handleDelete}
+              closed={appState.closed}
+            />
+          </div>
+          <div className="flexbox">
+            <div className="left-side"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

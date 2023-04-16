@@ -46,6 +46,13 @@ function SalesManagerReq() {
     },
   };
 
+  const [selectedStore, setSelectedStore] = useState(localStorage.getItem('selectedStore'));
+
+  const handleSelectStore = (storeId) => {
+    setSelectedStore(storeId);
+    localStorage.setItem('selectedStore', storeId);
+  };
+
   const [appState, setAppState] = useState({
     loading: false,
     stores: null,
@@ -62,23 +69,28 @@ function SalesManagerReq() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
+
   const handleSubmit = async (e) => {
     navigate('/SalesManager/Req/Create');
   };
 
   return (
-    <Wrapper>
+    <div className="wrapper">
       <NavState>
         <MainMenuManager />
       </NavState>
-      <Container>
-        <h1>Выбрать торговую точку</h1>
-        <Form>
-          <StoreManData stores={appState.stores}></StoreManData>
-          <Button onClick={handleSubmit}>Создать</Button>
-        </Form>
-      </Container>
-    </Wrapper>
+      <div className="container">
+        <div className="userAdd">
+          <div className="flexbox">
+            <h1>Выбрать торговую точку</h1>
+            <Form>
+              <StoreManData onSelectStore={handleSelectStore} stores={appState.stores} />
+              <Button onClick={handleSubmit}>Создать</Button>
+            </Form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -50,13 +50,11 @@ const Button = styled.button`
 function Login() {
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [userRole, setUserRole] = useState('');
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'X-Requested-With': 'XMLHttpRequest',
-      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
     },
   };
 
@@ -72,31 +70,33 @@ function Login() {
       console.log(resp.data.username);
       console.log(resp.data.headers['Content-Type']);
       console.log(resp.status);
+
+      // console.log(str.length);
     } catch (error) {
       console.log(error.resp);
     }
     let str = localStorage.getItem('Token');
-    // console.log(str.length);
     const customConfigUser = {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
         Authorization: 'Bearer_' + str,
       },
     };
+
     axios.get(baseURL + '/anyrole/getInfo', customConfigUser).then((resp) => {
       const UserRole = resp.data.role;
       console.log(UserRole);
       localStorage.setItem('Role', UserRole);
       if (UserRole === 'ROLE_ADMIN') {
-        navigate('/Admin');
+        navigate('/Admin/UserManage');
+        window.location.reload();
       } else if (UserRole === 'ROLE_SALESMANAGER') {
-        navigate('/SalesManager');
+        navigate('/SalesManager/Req');
+        window.location.reload();
       } else if (UserRole === 'ROLE_REQUESTMANAGER') {
-        navigate('/ReqManager');
+        navigate('/ReqManager/Req');
+        window.location.reload();
       } else {
         navigate('/Login');
       }

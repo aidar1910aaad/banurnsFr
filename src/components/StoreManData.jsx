@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
 function StoreManData(props) {
-  const [storeId, setStore] = useState(null);
-  console.log(storeId);
+  const { stores, onSelectStore } = props;
+  const [selectedStore, setSelectedStore] = useState(localStorage.getItem('selectedStore'));
+
+  const handleChange = (e) => {
+    const selectedStoreId = e.target.value;
+    setSelectedStore(selectedStoreId);
+    localStorage.setItem('selectedStore', selectedStoreId);
+    onSelectStore(selectedStoreId);
+  };
 
   useEffect(() => {
-    if (storeId !== null) {
-      localStorage.setItem('storeId', storeId);
+    const storedStore = localStorage.getItem('selectedStore');
+    if (storedStore) {
+      setSelectedStore(storedStore);
+      onSelectStore(storedStore);
     }
-  }, [storeId]);
+  }, [onSelectStore]);
 
-  const { stores } = props;
   if (!stores || stores.length === 0) return <p>Нет данных.</p>;
 
   return (
     <div>
       <label>
-        <select onChange={(e) => setStore(e.target.value)} type="text">
+        <select className="inputadm" onChange={handleChange} value={selectedStore}>
           <option hidden>Не выбрано</option>
           {stores.map((store) => (
             <option key={store.id} value={store.id}>

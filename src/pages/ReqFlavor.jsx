@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import NavState from '../contex/navState';
-import MainMenuAdmin from '../components/MainMenuAdmin';
+import MainMenuReqManager from '../components/MainMenuReqManager';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import FlavorData from '../components/FlavorData';
 
-function AdminFlavor() {
+function ReqFlavor() {
   const [name, setName] = useState('');
   const [description, setDesc] = useState('');
   const [quantity, setVal] = useState('');
@@ -28,7 +28,7 @@ function AdminFlavor() {
     console.log(userCreate);
     try {
       console.log(token);
-      await axios.post(baseURL + '/admin/addFlavor', userCreate, customConfig);
+      await axios.post(baseURL + '/reqprocessor/addFlavor', userCreate, customConfig);
 
       console.log('addedFlavor');
     } catch (error) {
@@ -42,7 +42,7 @@ function AdminFlavor() {
   });
   useEffect(() => {
     setAppState({ loading: true });
-    axios.get(baseURL + '/admin/getFlavors', customConfig).then((resp) => {
+    axios.get(baseURL + '/reqprocessor/getFlavors', customConfig).then((resp) => {
       const allflavor = resp.data;
       console.log(allflavor);
       setAppState({
@@ -55,7 +55,7 @@ function AdminFlavor() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.post(baseURL + `/admin/deleteFlavor/${id}`, null, customConfig);
+      await axios.post(baseURL + `/reqprocessor/deleteFlavor/${id}`, null, customConfig);
       setAppState((prevState) => ({
         ...prevState,
         flavors: prevState.flavors.filter((person) => person.id !== id),
@@ -68,7 +68,7 @@ function AdminFlavor() {
   return (
     <div className="wrapper">
       <NavState>
-        <MainMenuAdmin />
+        <MainMenuReqManager />
       </NavState>
       <div className="container">
         <div>
@@ -114,4 +114,4 @@ function AdminFlavor() {
   );
 }
 
-export default AdminFlavor;
+export default ReqFlavor;

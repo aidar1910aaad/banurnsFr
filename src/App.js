@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Redirect } from 'react-router-dom';
 import Admin from './pages/Admin';
 import AdminOutlet from './pages/AdminOutlet';
 import AdminUserManage from './pages/AdminUserManage';
@@ -14,6 +14,19 @@ import SalesManagerCreate from './pages/SalesManagerCreate';
 import ReqManagerReq from './pages/ReqManagerReq';
 import ReqManagerClosed from './pages/ReqManagerClosed';
 import ReqManagerShow from './pages/ReqManagerShow';
+import AdminFrStore from './pages/AdminFrStore';
+import AdminCellsSections from './pages/AdminCellsSections';
+import AdminCellsEditor from './pages/AdminCellsEditor';
+import AdminDryWarehouse from './pages/AdminDryWarehouse';
+import AdminDryCellsTypesEditor from './pages/AdminDryCellsTypesEditor';
+import ReqFlavor from './pages/ReqFlavor';
+import ReqMisc from './pages/ReqMisc';
+import ReqFrStore from './pages/ReqFrStore';
+import ReqCellsSections from './pages/ReqCellsSections';
+import ReqCellsEditor from './pages/ReqCellsEditor';
+import ReqDryWarehouse from './pages/ReqDryWarehouse';
+import ReqDryCellsTypesEditor from './pages/ReqDryCellsTypesEditor';
+import AllClosedReq from './components/AllClosedReq';
 
 function App() {
   const userRole = localStorage.getItem('Role');
@@ -26,14 +39,21 @@ function App() {
           {userRole === 'ROLE_ADMIN' ? (
             <>
               <Route path="/Admin" element={<Admin />} />
+              <Route path="*" element={<Navigate to="/Admin/UserManage" />} />
               <Route path="/Admin/UserManage" element={<AdminUserManage />} />
               <Route path="/Admin/Outlet" element={<AdminOutlet />} />
               <Route path="/Admin/Flavor" element={<AdminFlavor />} />
               <Route path="/Admin/Misc" element={<AdminMisc />} />
+              <Route path="/Admin/RefrigeratedWarehouse" element={<AdminFrStore />} />
+              <Route path="/Admin/RefrCellSections" element={<AdminCellsSections />} />
+              <Route path="/Admin/CellsTypesEditor" element={<AdminCellsEditor />} />
+              <Route path="/Admin/DryWarehouse" element={<AdminDryWarehouse />} />
+              <Route path="/Admin/DryCellsTypesEditor" element={<AdminDryCellsTypesEditor />} />
             </>
           ) : userRole === 'ROLE_SALESMANAGER' ? (
             <>
               <Route path="/SalesManager" element={<SalesManager />} />
+              <Route path="*" element={<Navigate to="/SalesManager/Req" />} />
               <Route path="/SalesManager/Req" element={<SalesManagerReq />} />
               <Route path="/SalesManager/Sended" element={<SalesManagerSended />} />
               <Route path="/SalesManager/Req/Create" element={<SalesManagerCreate />} />
@@ -44,9 +64,18 @@ function App() {
               <Route path="/ReqManager/Req" element={<ReqManagerReq />} />
               <Route path="/ReqManager/Closed" element={<ReqManagerClosed />} />
               <Route path="/ReqManager/Show" element={<ReqManagerShow />} />
+              <Route path="*" element={<Navigate to="/ReqManager/Req" />} />
+              <Route path="/ReqManager/ShowAll" element={<AllClosedReq />} />
+              <Route path="/ReqManager/Flavor" element={<ReqFlavor />} />
+              <Route path="/ReqManager/Misc" element={<ReqMisc />} />
+              <Route path="/ReqManager/RefrigeratedWarehouse" element={<ReqFrStore />} />
+              <Route path="/ReqManager/RefrCellSections" element={<ReqCellsSections />} />
+              <Route path="/ReqManager/CellsTypesEditor" element={<ReqCellsEditor />} />
+              <Route path="/ReqManager/DryWarehouse" element={<ReqDryWarehouse />} />
+              <Route path="/ReqManager/DryCellsTypesEditor" element={<ReqDryCellsTypesEditor />} />
             </>
           ) : (
-            <Route path="/login" element={<Navigate to="/Login" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           )}
         </Routes>
       </Router>

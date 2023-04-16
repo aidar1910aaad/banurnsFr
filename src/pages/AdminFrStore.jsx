@@ -3,13 +3,13 @@ import NavState from '../contex/navState';
 import MainMenuAdmin from '../components/MainMenuAdmin';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
-import FlavorData from '../components/FlavorData';
+import FrStoreData from '../components/FrStoreData';
 
-function AdminFlavor() {
+function AdminFrStore() {
   const [name, setName] = useState('');
-  const [description, setDesc] = useState('');
-  const [quantity, setVal] = useState('');
-  const [barcode, setBarCode] = useState('');
+  const [width, setWidth] = useState('');
+  const [height, setHeight] = useState('');
+  const [capacity, setCapacity] = useState('');
   const token = localStorage.getItem('Token');
   const customConfig = {
     headers: {
@@ -20,51 +20,51 @@ function AdminFlavor() {
   };
   const userCreate = JSON.stringify({
     name: name,
-    description: description,
-    barcode: barcode,
-    quantity: quantity,
+    width: width,
+    height: height,
+    capacity: capacity,
   });
   const handleSubmit = async (e) => {
     console.log(userCreate);
     try {
       console.log(token);
-      await axios.post(baseURL + '/admin/addFlavor', userCreate, customConfig);
+      await axios.post(baseURL + '/admin/addColdStorage', userCreate, customConfig);
 
-      console.log('addedFlavor');
+      console.log('addedFrozenStore');
     } catch (error) {
       console.log(error.resp);
     }
   };
-
   const [appState, setAppState] = useState({
     loading: false,
-    flavors: null,
+    stores: null,
   });
+
   useEffect(() => {
     setAppState({ loading: true });
-    axios.get(baseURL + '/admin/getFlavors', customConfig).then((resp) => {
-      const allflavor = resp.data;
-      console.log(allflavor);
+    axios.get(baseURL + '/admin/getAllColdStorages', customConfig).then((resp) => {
+      const allstores = resp.data;
+      console.log(allstores);
       setAppState({
         loading: false,
-        flavors: allflavor,
+        stores: allstores,
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
 
   const handleDelete = async (id) => {
     try {
-      await axios.post(baseURL + `/admin/deleteFlavor/${id}`, null, customConfig);
+      await axios.post(baseURL + `/admin/deleteColdStorageById/${id}`, null, customConfig);
       setAppState((prevState) => ({
         ...prevState,
-        flavors: prevState.flavors.filter((person) => person.id !== id),
+        stores: prevState.stores.filter((person) => person.id !== id),
       }));
-      console.log('deletedUser');
+      console.log('deletedColdSt');
     } catch (error) {
       console.log(error.resp);
     }
   };
+
   return (
     <div className="wrapper">
       <NavState>
@@ -72,15 +72,17 @@ function AdminFlavor() {
       </NavState>
       <div className="container">
         <div>
-          <h1 className="h1-text">Управление вкусами мороженного</h1>
+          <h1 className="h1-text">Добавление новых складов</h1>
         </div>
         <div className="userAdd">
-          <h2 className="descripword">Добавление нового вкуса</h2>
+          <h2 className="descripword">Создание нового холодильного склада</h2>
           <div className="span"></div>
           <div className="flexbox">
             <div className="left-side">
-              <div className="left-text">Название вкуса*</div>
-              <div className="left-text">Числовой код вкуса*</div>
+              <div className="left-text">Наименование *</div>
+              <div className="left-text">Секций в ширину *</div>
+              <div className="left-text">Секций в высоту *</div>
+              <div className="left-text">Вместимость *</div>
             </div>
             <div className="centerout-side">
               <form className="form">
@@ -88,14 +90,24 @@ function AdminFlavor() {
                   className="inputadm"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Банан"></input>
+                  placeholder="Склад #1"></input>
                 <input
                   className="inputadm"
-                  value={barcode}
-                  onChange={(e) => setBarCode(e.target.value)}
-                  placeholder="123456789"></input>
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  placeholder="1"></input>
+                <input
+                  className="inputadm"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  placeholder="1"></input>
+                <input
+                  className="inputadm"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                  placeholder="1"></input>
                 <button className="buttonadm" onClick={handleSubmit} type="submit">
-                  Добавить новый вкус
+                  Добавить новый склад
                 </button>
               </form>
             </div>
@@ -103,10 +115,10 @@ function AdminFlavor() {
           </div>
         </div>
         <div className="userAdd">
-          <h2 className="descripword">Перечень вкусов</h2>
+          <h2 className="descripword">Список складов</h2>
           <div className="span"></div>
           <div className="app">
-            <FlavorData handleDelete={handleDelete} flavors={appState.flavors} />
+            <FrStoreData handleDelete={handleDelete} stores={appState.stores} />
           </div>
         </div>
       </div>
@@ -114,4 +126,4 @@ function AdminFlavor() {
   );
 }
 
-export default AdminFlavor;
+export default AdminFrStore;

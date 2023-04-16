@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import NavState from '../contex/navState';
-import MainMenuAdmin from '../components/MainMenuAdmin';
+import MainMenuReqManager from '../components/MainMenuReqManager';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
-import StoreData from '../components/StoreData';
+import FrStoreData from '../components/FrStoreData';
 
-function AdminOutlet() {
+function ReqFrStore() {
   const [name, setName] = useState('');
+  const [width, setWidth] = useState('');
+  const [height, setHeight] = useState('');
+  const [capacity, setCapacity] = useState('');
   const token = localStorage.getItem('Token');
   const customConfig = {
     headers: {
@@ -17,26 +20,29 @@ function AdminOutlet() {
   };
   const userCreate = JSON.stringify({
     name: name,
+    width: width,
+    height: height,
+    capacity: capacity,
   });
   const handleSubmit = async (e) => {
     console.log(userCreate);
     try {
       console.log(token);
-      await axios.post(baseURL + '/admin/addStore', userCreate, customConfig);
+      await axios.post(baseURL + '/reqprocessor/addColdStorage', userCreate, customConfig);
 
-      console.log('addedStore');
+      console.log('addedFrozenStore');
     } catch (error) {
       console.log(error.resp);
     }
   };
-
   const [appState, setAppState] = useState({
     loading: false,
     stores: null,
   });
+
   useEffect(() => {
     setAppState({ loading: true });
-    axios.get(baseURL + '/admin/getAllStores', customConfig).then((resp) => {
+    axios.get(baseURL + '/reqprocessor/getAllColdStorages', customConfig).then((resp) => {
       const allstores = resp.data;
       console.log(allstores);
       setAppState({
@@ -44,35 +50,39 @@ function AdminOutlet() {
         stores: allstores,
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
+
   const handleDelete = async (id) => {
     try {
-      await axios.post(baseURL + `/admin/deleteStore/${id}`, null, customConfig);
+      await axios.post(baseURL + `/reqprocessor/deleteColdStorageById/${id}`, null, customConfig);
       setAppState((prevState) => ({
         ...prevState,
         stores: prevState.stores.filter((person) => person.id !== id),
       }));
-      console.log('deletedUser');
+      console.log('deletedColdSt');
     } catch (error) {
       console.log(error.resp);
     }
   };
+
   return (
     <div className="wrapper">
       <NavState>
-        <MainMenuAdmin />
+        <MainMenuReqManager />
       </NavState>
       <div className="container">
         <div>
-          <h1 className="h1-text">Управление торговыми точками</h1>
+          <h1 className="h1-text">Добавление новых складов</h1>
         </div>
         <div className="userAdd">
-          <h2 className="descripword">Добавление новой торговой точки</h2>
+          <h2 className="descripword">Создание нового холодильного склада</h2>
           <div className="span"></div>
           <div className="flexbox">
             <div className="left-side">
-              <div className="left-text">Наименование торговой точки*</div>
+              <div className="left-text">Наименование *</div>
+              <div className="left-text">Секций в ширину *</div>
+              <div className="left-text">Секций в высоту *</div>
+              <div className="left-text">Вместимость *</div>
             </div>
             <div className="centerout-side">
               <form className="form">
@@ -80,9 +90,24 @@ function AdminOutlet() {
                   className="inputadm"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="хан шатыр"></input>
+                  placeholder="Склад #1"></input>
+                <input
+                  className="inputadm"
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  placeholder="1"></input>
+                <input
+                  className="inputadm"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  placeholder="1"></input>
+                <input
+                  className="inputadm"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                  placeholder="1"></input>
                 <button className="buttonadm" onClick={handleSubmit} type="submit">
-                  Добавить торговую точку
+                  Добавить новый склад
                 </button>
               </form>
             </div>
@@ -90,10 +115,10 @@ function AdminOutlet() {
           </div>
         </div>
         <div className="userAdd">
-          <h2 className="descripword">Список торговых точек</h2>
+          <h2 className="descripword">Список складов</h2>
           <div className="span"></div>
           <div className="app">
-            <StoreData handleDelete={handleDelete} stores={appState.stores} />
+            <FrStoreData handleDelete={handleDelete} stores={appState.stores} />
           </div>
         </div>
       </div>
@@ -101,4 +126,4 @@ function AdminOutlet() {
   );
 }
 
-export default AdminOutlet;
+export default ReqFrStore;

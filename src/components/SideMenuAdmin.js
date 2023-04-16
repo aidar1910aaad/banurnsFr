@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import { MenuContext } from '../contex/navState';
+import React, { useContext, useState } from 'react';
 
 const Menu = styled.div`
   position: fixed;
@@ -45,21 +45,21 @@ export const MenuLink = styled.a`
   text-decoration: none;
   color: #fff;
   cursor: default;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 120%;
   font-weight: 50;
   background-color: #2a3f54;
-  border: none;
+  border-bottom: 1px solid #000;
   outline: none;
+
   border-size: 10px;
-  border-color: #000;
 
   :hover {
     background-position: 90% 50%;
     color: #fff;
-    border-bottom: 10px #fff;
+    border-bottom: 1px solid #5a738e;
     opacity: 0.9;
-    background: #222;
+    background: #374a5e;
     transition: 0.2s;
   }
 `;
@@ -79,8 +79,13 @@ SideMenuAdmin.defaultProps = {
     <>
       <MenuLink href="/Admin/UserManage">Управление пользователями</MenuLink>
       <MenuLink href="/Admin/Outlet">Торговые точки</MenuLink>
+      <MenuLink href="/Admin/RefrigeratedWarehouse">Добавление складов хл</MenuLink>
       <MenuLink href="/Admin/Flavor">Вкусы мороженого</MenuLink>
+      <MenuLink href="/Admin/RefrCellSections">Управление секциями</MenuLink>
+      <MenuLink href="/Admin/CellsTypesEditor">Типы секций</MenuLink>
       <MenuLink href="/Admin/Misc">Товары</MenuLink>
+      <MenuLink href="/Admin/DryWarehouse">Добавление сухих складов</MenuLink>
+      <MenuLink href="/Admin/DryCellsTypesEditor">Содержимое полок</MenuLink>
     </>
   ),
 };

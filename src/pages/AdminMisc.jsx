@@ -1,54 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import NavState from '../contex/navState';
 import MainMenuAdmin from '../components/MainMenuAdmin';
-import styled from 'styled-components';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import MiscData from '../components/MiscData';
 
-const Container = styled.div`
-  background: #fff5;
-  height: 800px;
-  padding-top: 70px;
-  padding-left: 300px;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  margin-left: 50px;
-`;
-
-const Input = styled.input`
-  height: 55px;
-  min-width: 40%;
-  width: 200px;
-  border-radius: 5px;
-  background: #3b4148;
-  margin-top: 15px;
-  font-size: 20px;
-  padding: 5px 5px;
-`;
-
-const Button = styled.button`
-  height: 55px;
-  border: none;
-  padding: 15px 20px;
-  width: 150px;
-  background-color: #3b4148;
-  color: #fff;
-  cursor: pointer;
-  margin-top: 15px;
-  border-radius: 5px;
-  font-size: 20px;
-`;
-
-const Wrapper = styled.div``;
-
 function AdminMisc() {
   const [name, setName] = useState('');
-  const [description, setDesc] = useState('');
-  const [quantity, setVal] = useState('');
+  const [description] = useState('');
+  const [quantity] = useState('');
   const [barcode, setBarCode] = useState('');
   const token = localStorage.getItem('Token');
   const customConfig = {
@@ -105,40 +65,50 @@ function AdminMisc() {
     }
   };
   return (
-    <Wrapper>
+    <div className="wrapper">
       <NavState>
         <MainMenuAdmin />
       </NavState>
-      <Container>
-        <h1>Добавить товар</h1>
-        <Form>
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Название товара"></Input>
-          <Input
-            value={description}
-            onChange={(e) => setDesc(e.target.value)}
-            placeholder="Количество в упаковке"></Input>
-          <Input
-            value={quantity}
-            onChange={(e) => setVal(e.target.value)}
-            placeholder="Количество"></Input>
-          <Input
-            value={barcode}
-            onChange={(e) => setBarCode(e.target.value)}
-            placeholder="Код товара"></Input>
-
-          <Button onClick={handleSubmit} type="submit">
-            Создать
-          </Button>
-        </Form>
-        <h1 className="h1">Список товаров</h1>
-        <div className="app">
-          <MiscData handleDelete={handleDelete} miscs={appState.miscs} />
+      <div className="container">
+        <div>
+          <h1 className="h1-text">Управление товарами</h1>
         </div>
-      </Container>
-    </Wrapper>
+        <div className="userAdd">
+          <h2 className="descripword">Добавление нового пользователя</h2>
+          <div className="span"></div>
+          <div className="flexbox">
+            <div className="left-side">
+              <div className="left-text">Название товара*</div>
+              <div className="left-text">Числовой код товара*</div>
+            </div>
+            <div className="centerout-side">
+              <form className="form">
+                <input
+                  className="inputadm"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Салфетка"></input>
+                <input
+                  className="inputadm"
+                  value={barcode}
+                  onChange={(e) => setBarCode(e.target.value)}
+                  placeholder="123456789"></input>
+                <button className="buttonadm" onClick={handleSubmit} type="submit">
+                  Добавить новый товар
+                </button>
+              </form>
+            </div>
+            <div className="right-side"></div>
+          </div>
+        </div>
+        <div className="userAdd">
+          <h2 className="descripword">Список товаров</h2>
+          <div className="app">
+            <MiscData handleDelete={handleDelete} miscs={appState.miscs} />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

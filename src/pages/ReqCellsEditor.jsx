@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import NavState from '../contex/navState';
-import MainMenuAdmin from '../components/MainMenuAdmin';
+import MainMenuReqManager from '../components/MainMenuReqManager';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
-import FlavorData from '../components/FlavorData';
+import CellsData from '../components/CellsData';
 
-function AdminFlavor() {
+function ReqCellsEditor() {
   const [name, setName] = useState('');
-  const [description, setDesc] = useState('');
-  const [quantity, setVal] = useState('');
-  const [barcode, setBarCode] = useState('');
+
   const token = localStorage.getItem('Token');
   const customConfig = {
     headers: {
@@ -20,67 +18,62 @@ function AdminFlavor() {
   };
   const userCreate = JSON.stringify({
     name: name,
-    description: description,
-    barcode: barcode,
-    quantity: quantity,
   });
   const handleSubmit = async (e) => {
     console.log(userCreate);
     try {
       console.log(token);
-      await axios.post(baseURL + '/admin/addFlavor', userCreate, customConfig);
+      await axios.post(baseURL + '/reqprocessor/addSection', userCreate, customConfig);
 
-      console.log('addedFlavor');
+      console.log('addedFrozenStore');
     } catch (error) {
       console.log(error.resp);
     }
   };
-
   const [appState, setAppState] = useState({
     loading: false,
-    flavors: null,
+    cells: null,
   });
   useEffect(() => {
     setAppState({ loading: true });
-    axios.get(baseURL + '/admin/getFlavors', customConfig).then((resp) => {
-      const allflavor = resp.data;
-      console.log(allflavor);
+    axios.get(baseURL + '/reqprocessor/getSections', customConfig).then((resp) => {
+      const allcells = resp.data;
+      console.log(allcells);
       setAppState({
         loading: false,
-        flavors: allflavor,
+        cells: allcells,
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
 
   const handleDelete = async (id) => {
     try {
-      await axios.post(baseURL + `/admin/deleteFlavor/${id}`, null, customConfig);
+      await axios.post(baseURL + `/reqprocessor/deleteSection/${id}`, null, customConfig);
       setAppState((prevState) => ({
         ...prevState,
-        flavors: prevState.flavors.filter((person) => person.id !== id),
+        cells: prevState.cells.filter((person) => person.id !== id),
       }));
-      console.log('deletedUser');
+      console.log('deletedSection');
     } catch (error) {
       console.log(error.resp);
     }
   };
+
   return (
     <div className="wrapper">
       <NavState>
-        <MainMenuAdmin />
+        <MainMenuReqManager />
       </NavState>
       <div className="container">
         <div>
-          <h1 className="h1-text">Управление вкусами мороженного</h1>
+          <h1 className="h1-text">Управление типами секций</h1>
         </div>
         <div className="userAdd">
-          <h2 className="descripword">Добавление нового вкуса</h2>
+          <h2 className="descripword">Добавление нового типа секций</h2>
           <div className="span"></div>
           <div className="flexbox">
             <div className="left-side">
-              <div className="left-text">Название вкуса*</div>
-              <div className="left-text">Числовой код вкуса*</div>
+              <div className="left-text">Тип секции *</div>
             </div>
             <div className="centerout-side">
               <form className="form">
@@ -88,14 +81,9 @@ function AdminFlavor() {
                   className="inputadm"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Банан"></input>
-                <input
-                  className="inputadm"
-                  value={barcode}
-                  onChange={(e) => setBarCode(e.target.value)}
-                  placeholder="123456789"></input>
+                  placeholder="Большая"></input>
                 <button className="buttonadm" onClick={handleSubmit} type="submit">
-                  Добавить новый вкус
+                  Добавить новый тип секции
                 </button>
               </form>
             </div>
@@ -103,10 +91,10 @@ function AdminFlavor() {
           </div>
         </div>
         <div className="userAdd">
-          <h2 className="descripword">Перечень вкусов</h2>
+          <h2 className="descripword">Список складов</h2>
           <div className="span"></div>
           <div className="app">
-            <FlavorData handleDelete={handleDelete} flavors={appState.flavors} />
+            <CellsData handleDelete={handleDelete} cells={appState.cells} />
           </div>
         </div>
       </div>
@@ -114,4 +102,4 @@ function AdminFlavor() {
   );
 }
 
-export default AdminFlavor;
+export default ReqCellsEditor;

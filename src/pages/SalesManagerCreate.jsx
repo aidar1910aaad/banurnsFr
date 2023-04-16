@@ -20,15 +20,10 @@ const Button = styled.button`
   font-size: 20px;
 `;
 
-const Container = styled.div`
-  background: #fff5;
-  height: 800px;
-  padding-top: 100px;
-`;
-const Wrapper = styled.div``;
-
 function SalesManagerCreate() {
   const resultStoreId = localStorage.getItem('storeId');
+  console.log(resultStoreId);
+  const [resultStoreId1, seetresultStoreId1] = useState(resultStoreId);
   const [resultDescription, setDescription] = useState('');
   console.log(resultDescription);
   const [resultFlavor, setResult] = useState('');
@@ -48,21 +43,56 @@ function SalesManagerCreate() {
     loading: false,
     flavors: null,
   });
+  const [appStateFlavors2, setAppStateFlavors2] = useState({
+    loading: false,
+    flavors: null,
+  });
+  const [appColdrel, setAppColdrel] = useState({ rels: null });
+
   useEffect(() => {
-    setAppStateFlavors({ loading: true });
-    axios.get(baseURL + '/salesmanager/getFlavors', customConfig).then((resp) => {
-      const allFlavors = resp.data;
-      console.log(allFlavors);
-      setAppStateFlavors({
-        loading: false,
-        flavors: allFlavors,
+    const id = localStorage.getItem('selectedStore');
+    axios
+      .get(baseURL + `/salesmanager/getColdVisibiltyByStoreId/${id}`, customConfig)
+      .then((resp) => {
+        const allMisc = resp.data;
+        console.log('1231231');
+        console.log(allMisc);
+        setAppColdrel({
+          rels: allMisc,
+        });
+
+        // Получаем массив relid из объектов в allMisc
+        const relIds = allMisc.map((misc) => misc.relid);
+
+        // Отправляем запрос на сервер для каждого relid
+        const allFlavors = []; // инициализируем пустой массив для названий вкусов
+        relIds.forEach((relId) => {
+          axios
+            .get(baseURL + `/salesmanager/getFlavNameByRelId/${relId}`, customConfig)
+            .then((resp) => {
+              const flavors = resp.data;
+              console.log(flavors);
+              if (!allFlavors.includes(flavors)) {
+                // проверяем, есть ли элемент уже в массиве
+                allFlavors.push(flavors); // добавляем названия вкусов в массив, если его нет
+                setAppStateFlavors({
+                  flavors: allFlavors,
+                });
+              }
+            });
+        });
       });
-    });
-  }, [setAppStateFlavors]);
+  }, [setAppColdrel, setAppStateFlavors]);
+  const flavorsArray = appStateFlavors.flavors ? appStateFlavors.flavors : [];
+  const flavorsJson = flavorsArray.map((flavor, index) => {
+    // создаем новый массив объектов
+    return { name: flavor, id: index }; // каждый объект содержит свойства name и id
+  });
+  console.log(flavorsJson);
 
   const [appStateMisc, setAppStateMisc] = useState({
     loading: false,
-    misc: null,
+    miscss: null,
   });
   useEffect(() => {
     setAppStateMisc({ loading: true });
@@ -71,22 +101,52 @@ function SalesManagerCreate() {
       console.log(allMisc);
       setAppStateMisc({
         loading: false,
-        misc: allMisc,
+        miscss: allMisc,
       });
     });
   }, [setAppStateMisc]);
+
+  useEffect(() => {
+    setAppStateFlavors2({ loading: true });
+    axios.get(baseURL + '/salesmanager/getFlavors', customConfig).then((resp) => {
+      const allMisc = resp.data;
+      console.log(allMisc);
+
+      const flavorsMap = {}; // Создаем пустой объект для хранения соответствия айди и названия вкуса
+
+      // Заполняем объект соответствия айди и названия вкуса из массива setAppStateFlavors2
+      setAppStateFlavors2.misc.forEach((flavor) => {
+        flavorsMap[flavor.id] = flavor.name;
+      });
+
+      // Заменяем айди на соответствующие названия вкусов из объекта соответствия
+      const allFlavors = allMisc.map((misc) => ({
+        ...misc,
+        name: flavorsMap[misc.id],
+      }));
+
+      setAppStateFlavors({
+        flavors: allFlavors,
+      });
+    });
+  }, [setAppStateFlavors, setAppStateFlavors2]);
+
+  console.log(appStateFlavors);
+
   function handleResultChange(newResult) {
     setResult(newResult);
   }
   function handleResultChangeMisc(newResultMisc) {
     setResultMisc(newResultMisc);
   }
+
   console.log(resultFlavor);
   console.log(resultMisc);
+  const id = localStorage.getItem('selectedStore');
   const usersName = JSON.stringify({
     flavors: resultFlavor,
     miscs: resultMisc,
-    storeid: resultStoreId,
+    storeid: id,
     description: resultDescription,
   });
   const handleSubmit = async (e) => {
@@ -101,27 +161,37 @@ function SalesManagerCreate() {
     }
   };
   return (
-    <Wrapper className="flex">
+    <div className="wrapper">
       <NavState>
         <MainMenuManager />
       </NavState>
-      <Container>
-        <h1>Отправка заявки</h1>
-        <CreateFlavors
-          setResult={handleResultChange}
-          flavors={appStateFlavors.flavors}></CreateFlavors>
-        <CreateMisc setResultMisc={handleResultChangeMisc} misc={appStateMisc.misc}></CreateMisc>
-        <div>
-          <textarea
-            className="textarea"
-            placeholder="Комментарий к заявке"
-            onChange={(e) => setDescription(e.target.value)}></textarea>
+      <div className="container">
+        <div className="userAdd">
+          <div>
+            <h1 className="h1-text">Отправка заявки</h1>
+          </div>
+          <div className="span"></div>
+          <div className="flexbox">
+            <form onSubmit={handleSubmit}>
+              <CreateFlavors setResult={handleResultChange} flavors={flavorsJson}></CreateFlavors>
+              <CreateMisc
+                setResultMisc={handleResultChangeMisc}
+                miscss={appStateMisc.miscss}
+                misc={1}></CreateMisc>
+              <div className="margintop">
+                <textarea
+                  className="textarea"
+                  placeholder="Комментарий к заявке"
+                  onChange={(e) => setDescription(e.target.value)}></textarea>
+              </div>
+              <Button onClick={handleSubmit} type="submit">
+                Отправить
+              </Button>
+            </form>
+          </div>
         </div>
-        <Button onClick={handleSubmit} type="submit">
-          Отправить
-        </Button>
-      </Container>
-    </Wrapper>
+      </div>
+    </div>
   );
 }
 
