@@ -3,6 +3,50 @@ import styled, { css } from 'styled-components';
 import { MenuContext } from '../contex/navState';
 import React, { useContext, useState } from 'react';
 
+const SubMenu = styled.div`
+  display: ${(props) => (props.open ? 'block' : 'none')};
+  padding: 10px;
+  background-color: #2a3f54;
+
+  a {
+    display: block;
+    padding: 5px 10px;
+    color: #333;
+    border-bottom: 1px solid #111;
+    font-size: 13px;
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+`;
+
+const SubMenuItem = styled.div`
+  a {
+    display: block;
+    padding: 5px 20px;
+
+    color: #333;
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+`;
+
+const MenuItem = styled.div`
+  cursor: pointer;
+
+  a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #fff;
+    border-bottom: 1px solid #111;
+    &:hover {
+      background-color: #374a5e;
+    }
+  }
+`;
+
 const Menu = styled.div`
   position: fixed;
 
@@ -10,7 +54,7 @@ const Menu = styled.div`
   left: 0px;
   bottom: 0px;
   z-index: 293;
-  width: 300px;
+  width: 250px;
   max-width: 100%;
   margin-top: 0px;
   padding-top: 70px;
@@ -67,25 +111,74 @@ export const MenuLink = styled.a`
 export const SideMenuAdmin = ({ children }) => {
   const { isMenuOpen } = useContext(MenuContext);
 
-  return <Menu open={isMenuOpen}>{children}</Menu>;
+  const [subMenuStates, setSubMenuStates] = useState({
+    users: false,
+    outlets: false,
+    refrigeratedWarehouses: false,
+    dryWarehouses: false,
+  });
+
+  const handleSubMenuClick = (subMenuKey) => {
+    setSubMenuStates((prevSubMenuStates) => ({
+      ...prevSubMenuStates,
+      [subMenuKey]: !prevSubMenuStates[subMenuKey],
+    }));
+  };
+
+  return (
+    <Menu open={isMenuOpen}>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('users')}>Пользователи</a>
+        <SubMenu open={subMenuStates.users}>
+          <SubMenuItem>
+            <a href="/Admin/UserManage">Управление пользователями</a>
+          </SubMenuItem>
+        </SubMenu>
+      </MenuItem>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('outlets')}>Торговые точки</a>
+        <SubMenu open={subMenuStates.outlets}>
+          <SubMenuItem>
+            <a href="/Admin/Outlet">Управление</a>
+          </SubMenuItem>
+        </SubMenu>
+      </MenuItem>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('refrigeratedWarehouses')}>Холодильные склады</a>
+        <SubMenu open={subMenuStates.refrigeratedWarehouses}>
+          <MenuItem>
+            <a href="/Admin/RefrigeratedWarehouse">Добавление складов</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/Admin/Flavor">Вкусы мороженого</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/Admin/RefrCellSections">Управление секциями</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/Admin/CellsTypesEditor">Типы секций</a>
+          </MenuItem>
+        </SubMenu>
+      </MenuItem>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('dryWarehouses')}>Сухие склады</a>
+        <SubMenu open={subMenuStates.dryWarehouses}>
+          <MenuItem>
+            <a href="/Admin/Misc">Товары</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/Admin/DryWarehouse">Сухие склады</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/Admin/DryCellsTypesEditor">Полки сухих складов</a>
+          </MenuItem>
+        </SubMenu>
+      </MenuItem>
+      {children}
+    </Menu>
+  );
 };
 
 SideMenuAdmin.propTypes = {
   children: PropTypes.node,
-};
-
-SideMenuAdmin.defaultProps = {
-  children: (
-    <>
-      <MenuLink href="/Admin/UserManage">Управление пользователями</MenuLink>
-      <MenuLink href="/Admin/Outlet">Торговые точки</MenuLink>
-      <MenuLink href="/Admin/RefrigeratedWarehouse">Добавление складов хл</MenuLink>
-      <MenuLink href="/Admin/Flavor">Вкусы мороженого</MenuLink>
-      <MenuLink href="/Admin/RefrCellSections">Управление секциями</MenuLink>
-      <MenuLink href="/Admin/CellsTypesEditor">Типы секций</MenuLink>
-      <MenuLink href="/Admin/Misc">Товары</MenuLink>
-      <MenuLink href="/Admin/DryWarehouse">Добавление сухих складов</MenuLink>
-      <MenuLink href="/Admin/DryCellsTypesEditor">Содержимое полок</MenuLink>
-    </>
-  ),
 };

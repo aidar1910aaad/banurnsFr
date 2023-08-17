@@ -210,7 +210,7 @@ function ReqModal(props) {
               />
               <select
                 className="inputadmCreate"
-                value={data && data.sectionid}
+                value={sectionid || (data && data.sectionid) || ''}
                 onChange={(e) => setSectionId(e.target.value)}>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
@@ -221,7 +221,7 @@ function ReqModal(props) {
               </select>
               <select
                 className="inputadmCreate"
-                value={data && data.flavorid}
+                value={flavid || (data && data.flavorid) || ''}
                 onChange={(e) => setFlavId(e.target.value)}>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
@@ -240,7 +240,7 @@ function ReqModal(props) {
         <p>{rel.description}</p>
         <div>
           <h2>Торговые точки</h2>
-          <div className="flexbox">
+          <div className="flexboxModal">
             {props.stores &&
               props.stores.map((store) => (
                 <label className="marginleft" key={store.id}>
@@ -256,7 +256,7 @@ function ReqModal(props) {
           </div>
         </div>
         <button className="buttonadmMod" onClick={handleSave} disabled={!changed}>
-          Сохранить
+          Сохранить торговые точки
         </button>
         <button className="buttonadmModd" onClick={handleDelete}>
           Удалить

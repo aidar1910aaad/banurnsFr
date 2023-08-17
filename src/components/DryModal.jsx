@@ -202,13 +202,13 @@ function DryModal(props) {
             <form>
               <input
                 className="inputadmCreate"
-                value={data.quantity}
+                value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder={data && data.quantity}
               />
               <select
                 className="inputadmCreate"
-                value={data && data.sectionid}
+                value={sectionid || (data && data.sectionid) || ''}
                 onChange={(e) => setSectionId(e.target.value)}>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
@@ -219,7 +219,7 @@ function DryModal(props) {
               </select>
               <select
                 className="inputadmCreate"
-                value={data && data.miscid}
+                value={flavid || (data && data.miscid) || ''}
                 onChange={(e) => setFlavId(e.target.value)}>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
@@ -239,7 +239,7 @@ function DryModal(props) {
         <p>{rel.description}</p>
         <div>
           <h2>Торговые точки</h2>
-          <div className="flexbox">
+          <div className="flexboxModal">
             {props.stores &&
               props.stores.map((store) => (
                 <label className="marginleft" key={store.id}>
@@ -255,7 +255,7 @@ function DryModal(props) {
           </div>
         </div>
         <button className="buttonadmMod" onClick={handleSave} disabled={!changed}>
-          Сохранить
+          Сохранить торговые точки
         </button>
         <button className="buttonadmModd" onClick={handleDelete}>
           Удалить

@@ -12,6 +12,7 @@ function ReqMisc() {
   const [quantity, setVal] = useState('');
   const [barcode, setBarCode] = useState('');
   const token = localStorage.getItem('Token');
+  const [errorMessage, setErrorMessage] = useState('');
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -26,11 +27,17 @@ function ReqMisc() {
     quantity: quantity,
   });
   const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!name || !barcode) {
+      setErrorMessage('Пожалуйста, заполните все поля');
+      return;
+    }
     console.log(userCreate);
     try {
       console.log(token);
       await axios.post(baseURL + '/reqprocessor/addMisc', userCreate, customConfig);
-
+      window.location.reload();
       console.log('addedFlavor');
     } catch (error) {
       console.log(error.resp);
@@ -97,6 +104,7 @@ function ReqMisc() {
                 <button className="buttonadm" onClick={handleSubmit} type="submit">
                   Добавить новый товар
                 </button>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
               </form>
             </div>
             <div className="right-side"></div>

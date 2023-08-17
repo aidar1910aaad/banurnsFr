@@ -6,9 +6,89 @@ import baseURL from '../apiConfig/const';
 import CreateFlavors from '../components/CreateFlavors';
 
 function CreateMisc(props) {
-  const { setResultMisc, miscss } = props;
+  const { setResultMisc, miscss, miscssF } = props;
+  const [categoryVisibility, setCategoryVisibility] = useState({});
   const [name, setName] = useState([]);
-  console.log(miscss);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [searchTerm, setSearchTerm] = useState('');
+  let filteredData;
+  if (miscssF && miscssF.length > 0) {
+    filteredData = miscssF.filter(
+      (item, index, self) => index === self.findIndex((t) => t.nameMisc === item.nameMisc),
+    );
+  } else {
+    filteredData = miscssF || []; // Set an empty array if data is null
+  }
+
+  console.log(filteredData);
+
+  console.log(filteredData);
+  const handleMiscInputChange = (e, id) => {
+    const value = e.target.value;
+    setResultMisc((prevMiscs) => {
+      if (!Array.isArray(prevMiscs)) {
+        return prevMiscs;
+      }
+
+      return prevMiscs.map((misc) => {
+        if (misc.id === id) {
+          misc.quantity = value;
+        }
+        return misc;
+      });
+    });
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleSearchTermChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const localStorageKey = 'miscInputs';
+
+  // Load inputs from localStorage when component is mounted
+  useEffect(() => {
+    const inputs = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+    setName(inputs);
+  }, []);
+
+  // Update localStorage when inputs change
+  useEffect(() => {
+    localStorage.setItem(localStorageKey, JSON.stringify(name));
+  }, [name]);
+
+  const filteredMiscs = filteredData
+    ? filteredData.filter((misc) => {
+        return misc.nameMisc && misc.nameMisc.toLowerCase().includes(searchTerm.toLowerCase());
+      })
+    : [];
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredMiscs ? filteredMiscs.slice(indexOfFirstItem, indexOfLastItem) : [];
+
+  const groupedItems = {};
+  currentItems.forEach((item) => {
+    if (!groupedItems[item.nameStorage]) {
+      groupedItems[item.nameStorage] = [];
+    }
+    groupedItems[item.nameStorage].push(item);
+  });
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredMiscs.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
 
   useEffect(() => {
     const result = name
@@ -16,118 +96,97 @@ function CreateMisc(props) {
       .map((value, index) => `${value[0]}:${value[1]}`)
       .join('&');
     setResultMisc(result);
-  }, [name, setResultMisc]);
-
+    console.log(result);
+  }, [name, setResultMisc, currentPage]);
+  const toggleCategoryVisibility = (category) => {
+    setCategoryVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [category]: !prevVisibility[category],
+    }));
+  };
   function handleInputChange(event, index) {
     const newInputs = [...name];
     newInputs[index] = [index, event.target.value];
     setName(newInputs);
   }
-
-  const resultStoreId = localStorage.getItem('storeId');
-  const [resultStoreId1, seetresultStoreId1] = useState(resultStoreId);
-  const [resultDescription, setDescription] = useState('');
-  const [resultFlavor, setResult] = useState('');
-  const [resultMisc, setResultMisc2] = useState('');
-
-  const navigate = useNavigate();
-  const token = localStorage.getItem('Token');
-
-  const customConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: 'Bearer_' + token,
-    },
+  const [flavorsVisible, setFlavorsVisible] = useState(true);
+  const toggleFlavorsVisibility = () => {
+    setFlavorsVisible(!flavorsVisible);
   };
-  const [appStateFlavors, setAppStateFlavors] = useState({
-    loading: false,
-    flavors: null,
-  });
-  const [appStateFlavors2, setAppStateFlavors2] = useState({
-    loading: false,
-    flavors: null,
-  });
-  const [appColdrel, setAppColdrel] = useState({ rels: null });
-
-  useEffect(() => {
-    const id = localStorage.getItem('selectedStore');
-    axios
-      .get(baseURL + `/salesmanager/getDryVisibiltyByStoreId/${id}`, customConfig)
-      .then((resp) => {
-        const allMisc = resp.data;
-        setAppColdrel({
-          rels: allMisc,
-        });
-
-        // Получаем массив relid из объектов в allMisc
-        const relIds = allMisc.map((misc) => misc.relid);
-
-        // Отправляем запрос на сервер для каждого relid
-        const allFlavors = []; // инициализируем пустой массив для названий вкусов
-        relIds.forEach((relId) => {
-          axios
-            .get(baseURL + `/salesmanager/getMiscNameByRelId/${relId}`, customConfig)
-            .then((resp) => {
-              const flavors = resp.data;
-              if (!allFlavors.includes(flavors)) {
-                // проверяем, есть ли элемент уже в массиве
-                allFlavors.push(flavors); // добавляем названия вкусов в массив, если его нет
-                setAppStateFlavors({
-                  flavors: allFlavors,
-                });
-              }
-            });
-          const flavorsMap = {};
-          if (miscss) {
-            miscss.forEach((misc) => {
-              flavorsMap[misc.name] = misc.id;
-            });
-
-            const allFlavors = setAppStateFlavors.flavors.map((flavor) => {
-              if (flavorsMap[flavor.name]) {
-                return { ...flavor, id: flavorsMap[flavor.name] };
-              }
-              return flavor;
-            });
-
-            setAppStateFlavors({
-              flavors: allFlavors,
-            });
-          }
-        });
-      });
-  }, [miscss, setAppColdrel, setAppStateFlavors]);
-  console.log(appStateFlavors.flavors);
-  const flavorsArray = appStateFlavors.flavors ? appStateFlavors.flavors : [];
-  console.log(flavorsArray);
-  const flavorsJson = flavorsArray.map((flavor, index) => {
-    const foundMisc = miscss.find((misc) => misc.name === flavor);
-    if (foundMisc) {
-      return { name: foundMisc.name, id: foundMisc.id };
-    }
-    return { name: flavor, id: index };
-  });
-  console.log(flavorsJson);
-
-  useEffect(() => {
-    setAppStateFlavors2({ loading: true });
-  }, [miscss, setAppStateFlavors, setAppStateFlavors2]);
-
-  console.log(appStateFlavors.flavors + 'fdfsfsdf');
-  const { misc } = props;
-  if (!misc || misc.length === 0) return <p className="margintop">Нет данных.</p>;
 
   return (
     <div className="h2">
       <h2>Дополнительное</h2>
-      {flavorsJson.map((miss) => (
-        <div className="h3" key={miss.id}>
-          <p> {miss.name}</p>
+      <button
+        type="button"
+        style={{
+          backgroundColor: '#f5f5f5',
+          border: 'none',
+          width: '100%',
+          borderRadius: '4px',
+          padding: '8px 10px',
+          color: '#333',
+          cursor: 'pointer',
+          outline: 'none',
+          marginTop: '15px',
+          marginBottom: '15px',
+          transition: 'background-color 0.3s ease',
+        }}
+        onClick={toggleFlavorsVisibility}>
+        {flavorsVisible ? 'Свернуть' : 'Показать'}
+      </button>
 
-          <input onChange={(e) => handleInputChange(e, miss.id)} type="number"></input>
-        </div>
-      ))}
+      <div className="searchbar">
+        <input
+          style={{
+            marginTop: '10px',
+            marginBottom: '5px',
+          }}
+          type="text"
+          placeholder="Поиск по названию"
+          value={searchTerm}
+          onChange={handleSearchTermChange}
+        />
+      </div>
+      {flavorsVisible && (
+        <>
+          {Object.entries(groupedItems).map(([nameStorage, items]) => (
+            <div key={nameStorage}>
+              <h2 onClick={() => toggleCategoryVisibility(nameStorage)}>{nameStorage}</h2>
+              {categoryVisibility[nameStorage] && (
+                <div>
+                  {items.map((item) => (
+                    <div className="h3" key={item.miscId}>
+                      <p>{item.nameMisc}</p>
+                      <input
+                        className="inputtt"
+                        onChange={(e) => handleInputChange(e, item.miscId)}
+                        type="number"
+                        value={item.quantity}></input>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </>
+      )}
+      <div className="pagination">
+        <select onChange={handleItemsPerPageChange}>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="25">25</option>
+        </select>
+        <ul>
+          {pageNumbers.map((number) => (
+            <li key={number}>
+              <a href="#" onClick={() => handlePageChange(number)}>
+                {number}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

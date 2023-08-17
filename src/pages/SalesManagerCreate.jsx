@@ -21,8 +21,16 @@ const Button = styled.button`
 `;
 
 function SalesManagerCreate() {
+  const [appStateMisc, setAppStateMisc] = useState({
+    loading: false,
+    miscss: null,
+  });
+
+  const [appStateMiscF, setAppStateMiscF] = useState({
+    loading: false,
+    miscssF: null,
+  });
   const resultStoreId = localStorage.getItem('storeId');
-  console.log(resultStoreId);
   const [resultStoreId1, seetresultStoreId1] = useState(resultStoreId);
   const [resultDescription, setDescription] = useState('');
   console.log(resultDescription);
@@ -55,8 +63,6 @@ function SalesManagerCreate() {
       .get(baseURL + `/salesmanager/getColdVisibiltyByStoreId/${id}`, customConfig)
       .then((resp) => {
         const allMisc = resp.data;
-        console.log('1231231');
-        console.log(allMisc);
         setAppColdrel({
           rels: allMisc,
         });
@@ -71,7 +77,6 @@ function SalesManagerCreate() {
             .get(baseURL + `/salesmanager/getFlavNameByRelId/${relId}`, customConfig)
             .then((resp) => {
               const flavors = resp.data;
-              console.log(flavors);
               if (!allFlavors.includes(flavors)) {
                 // проверяем, есть ли элемент уже в массиве
                 allFlavors.push(flavors); // добавляем названия вкусов в массив, если его нет
@@ -88,17 +93,11 @@ function SalesManagerCreate() {
     // создаем новый массив объектов
     return { name: flavor, id: index }; // каждый объект содержит свойства name и id
   });
-  console.log(flavorsJson);
 
-  const [appStateMisc, setAppStateMisc] = useState({
-    loading: false,
-    miscss: null,
-  });
   useEffect(() => {
     setAppStateMisc({ loading: true });
     axios.get(baseURL + '/salesmanager/getMisc', customConfig).then((resp) => {
       const allMisc = resp.data;
-      console.log(allMisc);
       setAppStateMisc({
         loading: false,
         miscss: allMisc,
@@ -107,10 +106,21 @@ function SalesManagerCreate() {
   }, [setAppStateMisc]);
 
   useEffect(() => {
+    setAppStateMisc({ loading: true });
+    axios.get(baseURL + `/salesmanager/getMiscListStoreId/${id}`, customConfig).then((resp) => {
+      const allMiscF = resp.data;
+      setAppStateMiscF({
+        loading: false,
+        miscssF: allMiscF,
+      });
+    });
+  }, [setAppStateMisc]);
+
+  useEffect(() => {
+    console.log(usersName);
     setAppStateFlavors2({ loading: true });
     axios.get(baseURL + '/salesmanager/getFlavors', customConfig).then((resp) => {
       const allMisc = resp.data;
-      console.log(allMisc);
 
       const flavorsMap = {}; // Создаем пустой объект для хранения соответствия айди и названия вкуса
 
@@ -140,7 +150,6 @@ function SalesManagerCreate() {
     setResultMisc(newResultMisc);
   }
 
-  console.log(resultFlavor);
   console.log(resultMisc);
   const id = localStorage.getItem('selectedStore');
   const usersName = JSON.stringify({
@@ -177,6 +186,7 @@ function SalesManagerCreate() {
               <CreateMisc
                 setResultMisc={handleResultChangeMisc}
                 miscss={appStateMisc.miscss}
+                miscssF={appStateMiscF.miscssF}
                 misc={1}></CreateMisc>
               <div className="margintop">
                 <textarea

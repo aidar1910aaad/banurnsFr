@@ -7,7 +7,7 @@ import axios from 'axios';
 import ClosedReqData from '../components/ClosedReqData';
 import AllClosedReq from '../components/AllClosedReq';
 
-function ReqManagerClosed() {
+function ReqManagerAllClosed() {
   const token = localStorage.getItem('Token');
   const customConfig = {
     headers: {
@@ -23,7 +23,7 @@ function ReqManagerClosed() {
 
   useEffect(() => {
     setAppState({ loading: true });
-    axios.get(baseURL + '/reqprocessor/get3NA', customConfig).then((resp) => {
+    axios.get(baseURL + '/reqprocessor/getAllRequests', customConfig).then((resp) => {
       const allstores = resp.data;
       console.log(allstores);
       setAppState({
@@ -49,7 +49,6 @@ function ReqManagerClosed() {
   const handleShow = async (id) => {
     localStorage.setItem('ReqId', id);
   };
-
   return (
     <div className="wrapper">
       <NavState>
@@ -57,7 +56,7 @@ function ReqManagerClosed() {
       </NavState>
       <div className="container">
         <div>
-          <h1 className="h1-text">Закрытые заявки</h1>
+          <h1 className="h1-text">Все закрытые заявки</h1>
         </div>
         <div className="userAdd">
           <div className="app">
@@ -76,4 +75,4 @@ function ReqManagerClosed() {
   );
 }
 
-export default ReqManagerClosed;
+export default ReqManagerAllClosed;

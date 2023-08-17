@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Admin from './pages/Admin';
 import AdminOutlet from './pages/AdminOutlet';
 import AdminUserManage from './pages/AdminUserManage';
@@ -27,6 +27,7 @@ import ReqCellsEditor from './pages/ReqCellsEditor';
 import ReqDryWarehouse from './pages/ReqDryWarehouse';
 import ReqDryCellsTypesEditor from './pages/ReqDryCellsTypesEditor';
 import AllClosedReq from './components/AllClosedReq';
+import ReqManagerAllClosed from './pages/ReqManagerAllClosed';
 
 function App() {
   const userRole = localStorage.getItem('Role');
@@ -63,6 +64,7 @@ function App() {
               <Route path="/ReqManager" element={<ReqManager />} />
               <Route path="/ReqManager/Req" element={<ReqManagerReq />} />
               <Route path="/ReqManager/Closed" element={<ReqManagerClosed />} />
+              <Route path="/ReqManager/AllClosed" element={<ReqManagerAllClosed />} />
               <Route path="/ReqManager/Show" element={<ReqManagerShow />} />
               <Route path="*" element={<Navigate to="/ReqManager/Req" />} />
               <Route path="/ReqManager/ShowAll" element={<AllClosedReq />} />

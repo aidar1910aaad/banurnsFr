@@ -17,7 +17,7 @@ function ReqManager() {
         <MainMenuManager />
       </NavState>
       <Container>
-        <h1>Добро пожаловать, Менеджер</h1>
+        <h1>Заявка успешно отправлена.</h1>
       </Container>
     </Wrapper>
   );

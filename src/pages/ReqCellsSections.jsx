@@ -181,7 +181,7 @@ function AdminCellsSections() {
                       </option>
                     ))}
                   </select>
-                  <button type="button" onClick={handleSubmit}>
+                  <button className="buttonadm" type="button" onClick={handleSubmit}>
                     Создать
                   </button>
                 </div>

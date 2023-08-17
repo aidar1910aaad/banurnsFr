@@ -71,7 +71,7 @@ function AdminDryCellsTypesEditor() {
   }, [selectedStoreId]);
 
   const userCreate = JSON.stringify({
-    flavid: flavid,
+    miscid: flavid,
     storageid: selectedStoreId,
     quantity: quantity,
     sectionid: sectionid,
@@ -181,7 +181,7 @@ function AdminDryCellsTypesEditor() {
                       </option>
                     ))}
                   </select>
-                  <button type="button" onClick={handleSubmit}>
+                  <button className="buttonadm" type="button" onClick={handleSubmit}>
                     Создать
                   </button>
                 </div>

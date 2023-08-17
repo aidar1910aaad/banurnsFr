@@ -42,9 +42,13 @@ function DryRelsData(props) {
   if (!rels || rels.length === 0) return <p>Нет данных.</p>;
 
   return (
-    <div className="flex">
+    <div className="flex wrap">
       {rels.map((rel) => (
-        <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}></div>
+        <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
+          <div className="relQuantity">
+            <div className="rel">{rel.quantity}</div>
+          </div>
+        </div>
       ))}
       {showModal && <DryModal rel={selectedRel} stores={stores} handleClose={handleCloseModal} />}
     </div>

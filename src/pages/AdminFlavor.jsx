@@ -10,6 +10,10 @@ function AdminFlavor() {
   const [description, setDesc] = useState('');
   const [quantity, setVal] = useState('');
   const [barcode, setBarCode] = useState('');
+  const [popularity, setPopularity] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const [narrow, setNarrow] = useState('');
   const token = localStorage.getItem('Token');
   const customConfig = {
     headers: {
@@ -23,13 +27,22 @@ function AdminFlavor() {
     description: description,
     barcode: barcode,
     quantity: quantity,
+    popularity: popularity,
+    narrow: narrow,
   });
   const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!name || !barcode || !popularity || narrow === '') {
+      setErrorMessage('Пожалуйста, заполните все поля');
+      return;
+    }
+
     console.log(userCreate);
     try {
       console.log(token);
       await axios.post(baseURL + '/admin/addFlavor', userCreate, customConfig);
-
+      window.location.reload();
       console.log('addedFlavor');
     } catch (error) {
       console.log(error.resp);
@@ -81,6 +94,8 @@ function AdminFlavor() {
             <div className="left-side">
               <div className="left-text">Название вкуса*</div>
               <div className="left-text">Числовой код вкуса*</div>
+              <div className="left-text">Популярность*</div>
+              <div className="left-text">Тип*</div>
             </div>
             <div className="centerout-side">
               <form className="form">
@@ -94,10 +109,26 @@ function AdminFlavor() {
                   value={barcode}
                   onChange={(e) => setBarCode(e.target.value)}
                   placeholder="123456789"></input>
+                <input
+                  className="inputadm"
+                  value={popularity}
+                  onChange={(e) => setPopularity(e.target.value)}
+                  placeholder="7"></input>
+                <label>
+                  <select
+                    className="inputadm"
+                    onChange={(e) => setNarrow(e.target.value)}
+                    type="bool">
+                    <option value="">Выберите тип</option>
+                    <option value={false}>Широкий</option>
+                    <option value={true}>Узкий</option>
+                  </select>
+                </label>
                 <button className="buttonadm" onClick={handleSubmit} type="submit">
                   Добавить новый вкус
                 </button>
               </form>
+              {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             </div>
             <div className="right-side"></div>
           </div>

@@ -57,6 +57,7 @@ function ReqManagerReq() {
     try {
       await axios.post(baseURL + `/reqprocessor/closeActive`, null, customConfig);
       console.log('deletedUser');
+      window.location.reload();
     } catch (error) {
       console.log(error.resp);
     }

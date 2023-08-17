@@ -1,7 +1,51 @@
-import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import { MenuContext } from '../contex/navState';
+import React, { useContext, useState } from 'react';
+
+const SubMenu = styled.div`
+  display: ${(props) => (props.open ? 'block' : 'none')};
+  padding: 10px;
+  background-color: #2a3f54;
+
+  a {
+    display: block;
+    padding: 5px 10px;
+    color: #333;
+    border-bottom: 1px solid #111;
+    font-size: 13px;
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+`;
+
+const SubMenuItem = styled.div`
+  a {
+    display: block;
+    padding: 5px 20px;
+
+    color: #333;
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+`;
+
+const MenuItem = styled.div`
+  cursor: pointer;
+
+  a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #fff;
+    border-bottom: 1px solid #111;
+    &:hover {
+      background-color: #374a5e;
+    }
+  }
+`;
 
 const Menu = styled.div`
   position: fixed;
@@ -10,7 +54,7 @@ const Menu = styled.div`
   left: 0px;
   bottom: 0px;
   z-index: 293;
-  width: 300px;
+  width: 250px;
   max-width: 100%;
   margin-top: 0px;
   padding-top: 70px;
@@ -67,25 +111,72 @@ export const MenuLink = styled.a`
 export const SideMenuReqManager = ({ children }) => {
   const { isMenuOpen } = useContext(MenuContext);
 
-  return <Menu open={isMenuOpen}>{children}</Menu>;
+  const [subMenuStates, setSubMenuStates] = useState({
+    users: false,
+    outlets: false,
+    refrigeratedWarehouses: false,
+    dryWarehouses: false,
+  });
+
+  const handleSubMenuClick = (subMenuKey) => {
+    setSubMenuStates((prevSubMenuStates) => ({
+      ...prevSubMenuStates,
+      [subMenuKey]: !prevSubMenuStates[subMenuKey],
+    }));
+  };
+
+  return (
+    <Menu open={isMenuOpen}>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('users')}>Заявки</a>
+        <SubMenu open={subMenuStates.users}>
+          <SubMenuItem>
+            <a href="/ReqManager/Req">Поступившие заявки</a>
+          </SubMenuItem>
+          <SubMenuItem>
+            <a href="/ReqManager/Closed">Закрытые заявки</a>
+          </SubMenuItem>
+          <SubMenuItem>
+            <a href="/ReqManager/AllClosed">Все закрытые заявки</a>
+          </SubMenuItem>
+        </SubMenu>
+      </MenuItem>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('refrigeratedWarehouses')}>Холодильные склады</a>
+        <SubMenu open={subMenuStates.refrigeratedWarehouses}>
+          <MenuItem>
+            <a href="/ReqManager/RefrigeratedWarehouse">Добавление холодного склада</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/ReqManager/Flavor">Вкусы мороженого</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/ReqManager/RefrCellSections">Управление секциями</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/ReqManager/CellsTypesEditor">Типы секций</a>
+          </MenuItem>
+        </SubMenu>
+      </MenuItem>
+      <MenuItem>
+        <a onClick={() => handleSubMenuClick('dryWarehouses')}>Сухие склады</a>
+        <SubMenu open={subMenuStates.dryWarehouses}>
+          <MenuItem>
+            <a href="/ReqManager/Misc">Товары</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/ReqManager/DryWarehouse">Добавление сухих складов</a>
+          </MenuItem>
+          <MenuItem>
+            <a href="/ReqManager/DryCellsTypesEditor">Содержимое полок</a>
+          </MenuItem>
+        </SubMenu>
+      </MenuItem>
+      {children}
+    </Menu>
+  );
 };
 
 SideMenuReqManager.propTypes = {
   children: PropTypes.node,
-};
-
-SideMenuReqManager.defaultProps = {
-  children: (
-    <>
-      <MenuLink href="/ReqManager/Req">Поступившие заявки</MenuLink>
-      <MenuLink href="/ReqManager/Closed">Закрытые заявки</MenuLink>
-      <MenuLink href="/ReqManager/RefrigeratedWarehouse">Добавление холодного склада</MenuLink>
-      <MenuLink href="/ReqManager/Flavor">Вкусы мороженого</MenuLink>
-      <MenuLink href="/ReqManager/RefrCellSections">Управление секциями</MenuLink>
-      <MenuLink href="/ReqManager/CellsTypesEditor">Типы секций</MenuLink>
-      <MenuLink href="/ReqManager/Misc">Товары</MenuLink>
-      <MenuLink href="/ReqManager/DryWarehouse">Добавление сухих складов</MenuLink>
-      <MenuLink href="/ReqManager/DryCellsTypesEditor">Содержимое полок</MenuLink>
-    </>
-  ),
 };

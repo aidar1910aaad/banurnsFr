@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment/moment';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
+import JsBarcode from 'jsbarcode';
 import '../css/style.css';
 
 function ShowedReq(props) {
@@ -132,6 +133,20 @@ function ShowedReq(props) {
           })
           .reduce((acc, curr) => acc + curr, 0)
       : 0;
+  const totalQuantityNarrow =
+    showed && showed.flavors
+      ? showed.flavors
+          .split('&')
+          .map((flavor) => {
+            const [id, quantity] = flavor.split(':');
+            const flavorData = idFlav[parseInt(id)];
+            if (flavorData?.narrow === true) {
+              return parseInt(quantity);
+            }
+            return 0;
+          })
+          .reduce((acc, curr) => acc + curr, 0)
+      : 0;
 
   const totalQuantity =
     showed && showed.flavors
@@ -139,7 +154,11 @@ function ShowedReq(props) {
           .split('&')
           .map((flavor) => {
             const [id, quantity] = flavor.split(':');
-            return parseInt(quantity);
+            const flavorData = idFlav[parseInt(id)];
+            if (flavorData?.narrow === false) {
+              return parseInt(quantity);
+            }
+            return 0;
           })
           .reduce((acc, curr) => acc + curr, 0)
       : 0;
@@ -151,9 +170,9 @@ function ShowedReq(props) {
   if (!showed || showed.length === 0) return <p>Нет данных.</p>;
   return (
     <div className="wrapper containerw">
-      <div className="containerr  flexbox">
+      <div className="containerr">
         <div className="  flex-boxx">
-          <div className=" leftttt userAdd">
+          <div className=" leftttt userAddd">
             <div>
               <button className=" right buttonadmm" onClick={handlePrintClick}>
                 Печать
@@ -164,9 +183,9 @@ function ShowedReq(props) {
               </h2>
               <div className="span"></div>
               <h2 className="margintop">Холодный склад</h2>
-              <div className="userAdd">
+              <div className="userAdddd">
                 <div className="flex">
-                  <table className="topmin">
+                  <table className="topmin table">
                     <thead>
                       <tr>
                         <th>Номер</th>
@@ -179,27 +198,67 @@ function ShowedReq(props) {
                         showed.flavors.split('&').map((flavor, index) => {
                           const [id, quantity] = flavor.split(':');
                           const flavorData = idFlav[parseInt(id)];
-                          return (
-                            <tr key={id}>
-                              <td>{index + 1}</td>
-                              <td>{flavorData?.name}</td>
-                              <td>{parseInt(quantity)}</td>
-                            </tr>
-                          );
+                          // Фильтрация для широких мороженых (narrow: false)
+                          if (flavorData?.narrow === false) {
+                            return (
+                              <tr key={id}>
+                                <td className="tdd">{index + 1}</td>
+                                <td className="tdd">{flavorData?.name}</td>
+                                <td className="tdd">{parseInt(quantity)}</td>
+                              </tr>
+                            );
+                          }
+                          return null;
                         })}
                     </tbody>
                   </table>
                 </div>
               </div>
               <p className="margintop">Общее количество мороженого: {totalQuantity}</p>
-              <h2 className="margintop">Сухой склад</h2>
-              <div className="userAdd">
+
+              <h2 className="margintop">Холодный узкий склад</h2>
+              <div className="userAdddd">
                 <div className="flex">
-                  <table className="topmin">
+                  <table className="topmin table">
                     <thead>
                       <tr>
                         <th>Номер</th>
                         <th>Название вкуса</th>
+                        <th>Количество</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {showed.flavors &&
+                        showed.flavors.split('&').map((flavor, index) => {
+                          const [id, quantity] = flavor.split(':');
+                          const flavorData = idFlav[parseInt(id)];
+                          // Фильтрация для узких мороженых (narrow: true)
+                          if (flavorData?.narrow === true) {
+                            return (
+                              <tr key={id}>
+                                <td className="tdd">{index + 1}</td>
+                                <td className="tdd">{flavorData?.name}</td>
+                                <td className="tdd">{parseInt(quantity)}</td>
+                              </tr>
+                            );
+                          }
+                          return null;
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <p className="margintop">Общее количество мороженого: {totalQuantityNarrow}</p>
+
+              <h2 className="margintop">Сухой склад</h2>
+              <div className="userAdddd">
+                <div className="flex">
+                  <table className="topmin table">
+                    <thead>
+                      <tr>
+                        <th>Номер</th>
+                        <th>Название товара</th>
+                        <th>Товарный код</th>
                         <th>Количество</th>
                       </tr>
                     </thead>
@@ -210,9 +269,23 @@ function ShowedReq(props) {
                           const flavorData = idMisc[parseInt(id)];
                           return (
                             <tr key={id}>
-                              <td>{index + 1}</td>
-                              <td>{flavorData?.name}</td>
-                              <td>{parseInt(quantity)}</td>
+                              <td className="tdd">{index + 1}</td>
+                              <td className="tdd">{flavorData?.name}</td>
+                              <td className="tdd">
+                                <img
+                                  style={{ width: '130px', height: '40px' }}
+                                  className="barcode"
+                                  alt={flavorData?.barcode}
+                                  ref={(element) =>
+                                    element &&
+                                    JsBarcode(element, flavorData?.barcode, {
+                                      width: 5,
+                                      format: 'CODE128',
+                                    })
+                                  }
+                                />
+                              </td>
+                              <td className="tdd">{parseInt(quantity)}</td>
                             </tr>
                           );
                         })}

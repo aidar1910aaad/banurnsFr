@@ -51,7 +51,7 @@ function UserData(props) {
   const currentPersons = sortedPersons.slice(startIndex, endIndex);
 
   return (
-    <div className="flex">
+    <div className="flexbox">
       <table>
         {' '}
         <thead>

@@ -6,7 +6,7 @@ function MiscData(props, handleDelete) {
   const { miscs } = props;
   const [sortOrder, setSortOrder] = useState('asc');
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
 
   if (!miscs || miscs.length === 0) return <p>Нет данных.</p>;
 

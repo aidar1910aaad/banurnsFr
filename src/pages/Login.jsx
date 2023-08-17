@@ -15,6 +15,11 @@ const Container = styled.div`
   justify-content: center;
 `;
 
+const ErrorMessage = styled.div`
+  color: red;
+  margin-top: 10px;
+`;
+
 const Wrapper = styled.div`
   width: 330px;
   height: 200px;
@@ -51,6 +56,7 @@ function Login() {
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
   const [userRole, setUserRole] = useState('');
+  const [isError, setIsError] = useState(false);
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -70,10 +76,12 @@ function Login() {
       console.log(resp.data.username);
       console.log(resp.data.headers['Content-Type']);
       console.log(resp.status);
+      setIsError(false);
 
       // console.log(str.length);
     } catch (error) {
       console.log(error.resp);
+      setIsError(true);
     }
     let str = localStorage.getItem('Token');
     const customConfigUser = {
@@ -118,6 +126,8 @@ function Login() {
             placeholder="Пароль"
             autocomplete="off"
             type="password"></Input>
+          {isError && <ErrorMessage>Неверное имя пользователя или пароль</ErrorMessage>}{' '}
+          {/* добавлено отображение ошибки */}
           <Button onClick={handleSubmit} type="submit">
             Войти
           </Button>

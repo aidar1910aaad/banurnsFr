@@ -10,6 +10,8 @@ function AdminMisc() {
   const [description] = useState('');
   const [quantity] = useState('');
   const [barcode, setBarCode] = useState('');
+
+  const [errorMessage, setErrorMessage] = useState('');
   const token = localStorage.getItem('Token');
   const customConfig = {
     headers: {
@@ -26,10 +28,16 @@ function AdminMisc() {
   });
   const handleSubmit = async (e) => {
     console.log(userCreate);
+    e.preventDefault();
+
+    if (!name || !barcode) {
+      setErrorMessage('Пожалуйста, заполните все поля');
+      return;
+    }
     try {
       console.log(token);
       await axios.post(baseURL + '/admin/addMisc', userCreate, customConfig);
-
+      window.location.reload();
       console.log('addedFlavor');
     } catch (error) {
       console.log(error.resp);
@@ -96,6 +104,7 @@ function AdminMisc() {
                 <button className="buttonadm" onClick={handleSubmit} type="submit">
                   Добавить новый товар
                 </button>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
               </form>
             </div>
             <div className="right-side"></div>

@@ -22,7 +22,7 @@ const Navbar = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   padding: 6px 20px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 16px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 16px;
   z-index: 500;
   border-bottom: 1px #d9dee4;
 `;
