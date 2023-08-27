@@ -63,7 +63,6 @@ function FlavorData(props) {
   const handleSavePopularity = (id) => {
     const { value } = editedPopularity;
     const data = { id, popularity: value };
-    console.log(sortedFlavors);
     const token = localStorage.getItem('Token');
     const role = localStorage.getItem('Role');
     const customConfig = {

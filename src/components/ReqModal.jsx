@@ -13,7 +13,11 @@ function ReqModal(props) {
   const [visibleStores, setVisibleStores] = useState([]);
   const [changed, setChanged] = useState(false);
   const [existingVisibleStores, setExistingVisibleStores] = useState([]);
-
+  const [formData, setFormData] = useState({
+    sectionid: (data && data.sectionid) || '',
+    quantity: (data && data.quantity) || '',
+    flavid: (data && data.flavorid) || '',
+  });
   const token = localStorage.getItem('Token');
   const storageid = localStorage.getItem('selectedStore');
   const customConfig = {
@@ -23,20 +27,17 @@ function ReqModal(props) {
       Authorization: 'Bearer_' + token,
     },
   };
-  console.log(storageid);
   const usersName = JSON.stringify({
-    id: rel.id,
-    flavid: flavid,
-    storageid: storageid,
-    sectionid: sectionid,
-    quantity: quantity,
+    id: rel.id, //base
+    flavid: formData.flavid !== '' ? formData.flavid : rel.flavorid,
+    storageid: rel.storageid, //base
+    sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
+    quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
   });
-  console.log(usersName);
   const handleSave2 = () => {
     axios
       .post(baseURL + '/reqprocessor/modifyColdRel', usersName, customConfig)
       .then((response) => {
-        console.log(response);
         setChanged(false);
       })
       .catch((error) => {
@@ -204,14 +205,17 @@ function ReqModal(props) {
             <form>
               <input
                 className="inputadmCreate"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                 placeholder={data && data.quantity}
               />
               <select
                 className="inputadmCreate"
-                value={sectionid || (data && data.sectionid) || ''}
-                onChange={(e) => setSectionId(e.target.value)}>
+                // value={sectionid || (data && data.sectionid) || 'секция'}
+                value={formData.sectionid || (data && data.sectionid) || ''}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({ ...prevFormData, sectionid: e.target.value }))
+                }>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
                   <option key={section.id} value={section.id}>
@@ -221,8 +225,11 @@ function ReqModal(props) {
               </select>
               <select
                 className="inputadmCreate"
-                value={flavid || (data && data.flavorid) || ''}
-                onChange={(e) => setFlavId(e.target.value)}>
+                // value={flavid || (data && data.flavorid) || 'секция'}
+                value={formData.flavid || (data && data.flavorid) || ''}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({ ...prevFormData, flavid: e.target.value }))
+                }>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
                   <option key={flavor.id} value={flavor.id}>

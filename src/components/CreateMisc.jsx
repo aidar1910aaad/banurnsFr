@@ -21,9 +21,6 @@ function CreateMisc(props) {
     filteredData = miscssF || []; // Set an empty array if data is null
   }
 
-  console.log(filteredData);
-
-  console.log(filteredData);
   const handleMiscInputChange = (e, id) => {
     const value = e.target.value;
     setResultMisc((prevMiscs) => {
@@ -96,7 +93,6 @@ function CreateMisc(props) {
       .map((value, index) => `${value[0]}:${value[1]}`)
       .join('&');
     setResultMisc(result);
-    console.log(result);
   }, [name, setResultMisc, currentPage]);
   const toggleCategoryVisibility = (category) => {
     setCategoryVisibility((prevVisibility) => ({

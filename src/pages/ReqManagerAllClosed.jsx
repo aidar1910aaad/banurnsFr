@@ -25,7 +25,6 @@ function ReqManagerAllClosed() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getAllRequests', customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         closed: allstores,
@@ -42,9 +41,7 @@ function ReqManagerAllClosed() {
         closed: prevState.closed.filter((person) => person.id !== id),
       }));
       console.log('deletedUser');
-    } catch (error) {
-      console.log(error.resp);
-    }
+    } catch (error) {}
   };
   const handleShow = async (id) => {
     localStorage.setItem('ReqId', id);

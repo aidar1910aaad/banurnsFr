@@ -23,7 +23,6 @@ function AllClosedReq() {
     axios.get(baseURL + '/reqprocessor/getAllRequests', customConfig).then((resp) => {
       const allstores = resp.data.filter((req) => req.status === 'ACTIVE');
 
-      console.log(allstores);
       setAppState({
         loading: false,
         closed: allstores,

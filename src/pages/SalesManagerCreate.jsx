@@ -150,7 +150,6 @@ function SalesManagerCreate() {
     setResultMisc(newResultMisc);
   }
 
-  console.log(resultMisc);
   const id = localStorage.getItem('selectedStore');
   const usersName = JSON.stringify({
     flavors: resultFlavor,
@@ -160,7 +159,6 @@ function SalesManagerCreate() {
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(usersName);
     try {
       const resp = await axios.post(baseURL + '/salesmanager/addRequest', usersName, customConfig);
       console.log('Заявка успешно добавлена');

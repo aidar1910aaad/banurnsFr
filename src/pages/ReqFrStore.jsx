@@ -25,7 +25,6 @@ function ReqFrStore() {
     capacity: capacity,
   });
   const handleSubmit = async (e) => {
-    console.log(userCreate);
     try {
       console.log(token);
       await axios.post(baseURL + '/reqprocessor/addColdStorage', userCreate, customConfig);
@@ -44,7 +43,6 @@ function ReqFrStore() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getAllColdStorages', customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         stores: allstores,

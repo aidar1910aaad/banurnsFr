@@ -72,10 +72,7 @@ function Login() {
     try {
       const resp = await axios.post(baseURL + '/auth/login', usersName, customConfig);
       localStorage.setItem('Token', resp.data.token);
-      console.log(resp.data.token); // '{"name":"John Doe"}'
-      console.log(resp.data.username);
-      console.log(resp.data.headers['Content-Type']);
-      console.log(resp.status);
+
       setIsError(false);
 
       // console.log(str.length);
@@ -94,7 +91,6 @@ function Login() {
 
     axios.get(baseURL + '/anyrole/getInfo', customConfigUser).then((resp) => {
       const UserRole = resp.data.role;
-      console.log(UserRole);
       localStorage.setItem('Role', UserRole);
       if (UserRole === 'ROLE_ADMIN') {
         navigate('/Admin/UserManage');
@@ -126,7 +122,6 @@ function Login() {
             placeholder="Пароль"
             autocomplete="off"
             type="password"></Input>
-          {isError && <ErrorMessage>Неверное имя пользователя или пароль</ErrorMessage>}{' '}
           {/* добавлено отображение ошибки */}
           <Button onClick={handleSubmit} type="submit">
             Войти

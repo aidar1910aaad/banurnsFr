@@ -33,9 +33,7 @@ function ReqMisc() {
       setErrorMessage('Пожалуйста, заполните все поля');
       return;
     }
-    console.log(userCreate);
     try {
-      console.log(token);
       await axios.post(baseURL + '/reqprocessor/addMisc', userCreate, customConfig);
       window.location.reload();
       console.log('addedFlavor');
@@ -52,7 +50,6 @@ function ReqMisc() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getMisc', customConfig).then((resp) => {
       const allMisc = resp.data;
-      console.log(allMisc);
       setAppState({
         loading: false,
         miscs: allMisc,

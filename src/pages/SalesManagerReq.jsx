@@ -61,7 +61,6 @@ function SalesManagerReq() {
     setAppState({ loading: true });
     axios.get(baseURL + '/salesmanager/getAllStores', customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         stores: allstores,

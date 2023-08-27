@@ -27,7 +27,6 @@ function AdminMisc() {
     quantity: quantity,
   });
   const handleSubmit = async (e) => {
-    console.log(userCreate);
     e.preventDefault();
 
     if (!name || !barcode) {
@@ -52,7 +51,6 @@ function AdminMisc() {
     setAppState({ loading: true });
     axios.get(baseURL + '/admin/getAllMisc', customConfig).then((resp) => {
       const allMisc = resp.data;
-      console.log(allMisc);
       setAppState({
         loading: false,
         miscs: allMisc,

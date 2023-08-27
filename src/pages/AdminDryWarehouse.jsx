@@ -42,7 +42,6 @@ function AdminDryWarehouse() {
     setAppState({ loading: true });
     axios.get(baseURL + '/admin/getAllDryStorages', customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         stores: allstores,

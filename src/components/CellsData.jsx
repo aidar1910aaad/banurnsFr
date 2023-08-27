@@ -2,7 +2,6 @@ import React from 'react';
 import '../css/style.css';
 function CellsData(props, handleDelete) {
   const { cells } = props;
-  console.log(cells);
 
   if (!cells || cells.length === 0) return <p>Нет данных.</p>;
   return (

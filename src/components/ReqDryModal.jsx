@@ -23,20 +23,24 @@ function ReqDryModal(props) {
       Authorization: 'Bearer_' + token,
     },
   };
-  console.log(storageid);
+
+  const [formData, setFormData] = useState({
+    sectionid: (data && data.sectionid) || '',
+    quantity: (data && data.quantity) || '',
+    flavid: (data && data.miscid) || '',
+  });
+
   const usersName = JSON.stringify({
     id: rel.id,
-    miscid: flavid,
+    miscid: formData.flavid !== '' ? formData.flavid : (data && data.miscid) || '',
     storageid: storageid,
-    sectionid: sectionid,
-    quantity: quantity,
+    sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
+    quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
   });
-  console.log(usersName);
   const handleSave2 = () => {
     axios
       .post(baseURL + '/reqprocessor/modifyDryRel', usersName, customConfig)
       .then((response) => {
-        console.log(response);
         setChanged(false);
       })
       .catch((error) => {
@@ -107,7 +111,6 @@ function ReqDryModal(props) {
         axios
           .get(baseURL + `/reqprocessor/getDryVisibleByRelId/${rel.id}`, customConfig)
           .then((response) => {
-            console.log(response.data);
             setVisibleStores(response.data.map((item) => item.storeid));
             setExistingVisibleStores(response.data);
           })
@@ -127,7 +130,6 @@ function ReqDryModal(props) {
           },
         });
         setFlavors(response.data);
-        console.log(flavors);
       } catch (error) {
         console.log(error);
       }
@@ -156,7 +158,6 @@ function ReqDryModal(props) {
     axios
       .get(baseURL + `/reqprocessor/getDryVisibleByRelId/${rel.id}`, customConfig)
       .then((response) => {
-        console.log(response.data);
         setVisibleStores(response.data.map((item) => item.storeid));
         setExistingVisibleStores(response.data);
       })
@@ -168,7 +169,6 @@ function ReqDryModal(props) {
     axios
       .get(baseURL + `/reqprocessor/getDryRel/${rel.id}`, customConfig)
       .then((response) => {
-        console.log(response.data);
         setData(response.data);
       })
       .catch((error) => {
@@ -203,14 +203,16 @@ function ReqDryModal(props) {
             <form>
               <input
                 className="inputadmCreate"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                 placeholder={data && data.quantity}
               />
               <select
                 className="inputadmCreate"
-                value={sectionid || (data && data.sectionid) || ''}
-                onChange={(e) => setSectionId(e.target.value)}>
+                value={formData.sectionid || (data && data.sectionid) || ''}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({ ...prevFormData, sectionid: e.target.value }))
+                }>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
                   <option key={section.id} value={section.id}>
@@ -220,8 +222,10 @@ function ReqDryModal(props) {
               </select>
               <select
                 className="inputadmCreate"
-                value={flavid || (data && data.miscid) || ''}
-                onChange={(e) => setFlavId(e.target.value)}>
+                value={formData.flavid || (data && data.miscid) || ''}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({ ...prevFormData, flavid: e.target.value }))
+                }>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
                   <option key={flavor.id} value={flavor.id}>

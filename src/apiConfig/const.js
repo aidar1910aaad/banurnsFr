@@ -1,3 +1,3 @@
-const baseURL = `http://ssklad-env.eba-azpi9hgy.us-west-2.elasticbeanstalk.com/api`;
+const baseURL = `http://86.107.45.32:8080/api`;
 
 export default baseURL;

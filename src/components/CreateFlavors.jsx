@@ -42,7 +42,6 @@ function CreateFlavors(props) {
     setAppStateFlavors2({ loading: true });
     axios.get(baseURL + '/salesmanager/getFlavors', customConfig).then((resp) => {
       const allMisc = resp.data;
-      console.log(allMisc);
 
       setAppStateFlavors2({
         flavorsss: allMisc,
@@ -52,18 +51,14 @@ function CreateFlavors(props) {
 
   const { flavors } = props;
   const flav = appStateFlavors2.flavorsss ? appStateFlavors2.flavorsss : [];
-  console.log(flav);
-  console.log(flavors);
 
   const flavorsArray = flavors.map((flavor) => flavor.name);
 
-  console.log(flavorsArray);
   const flavorsJson = flavorsArray.map((flavorr) => {
     const foundMisc =
       appStateFlavors2.flavorsss &&
       appStateFlavors2.flavorsss.find((name) => name.name === flavorr);
     if (foundMisc) {
-      console.log(foundMisc);
       return { name: foundMisc.name, id: foundMisc.id, popularity: foundMisc.popularity };
     }
     // Return an object with id = null since the name doesn't have an associated id
@@ -83,7 +78,6 @@ function CreateFlavors(props) {
     setSortOrder((prevSortOrder) => (prevSortOrder === 'ascending' ? 'descending' : 'ascending'));
   };
 
-  console.log(flavorsJson);
   if (!flavors || flavors.length === 0) return <p>Нет данных.</p>;
 
   const toggleFlavorsVisibility = () => {

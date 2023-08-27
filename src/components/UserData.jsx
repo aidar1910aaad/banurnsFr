@@ -8,7 +8,6 @@ function UserData(props) {
   const [sortOrder, setSortOrder] = useState('asc');
   const [sortBy, setSortBy] = useState('username');
   const { persons } = props;
-  console.log(persons);
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);

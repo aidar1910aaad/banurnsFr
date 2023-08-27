@@ -25,7 +25,6 @@ function ReqDryWarehouse() {
   const handleSubmit = async (e) => {
     console.log(userCreate);
     try {
-      console.log(token);
       await axios.post(baseURL + '/reqprocessor/addDryStorage', userCreate, customConfig);
 
       console.log('addedDryStore');
@@ -42,7 +41,6 @@ function ReqDryWarehouse() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getAllDryStorages', customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         stores: allstores,

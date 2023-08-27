@@ -36,9 +36,8 @@ function ReqFlavor() {
       setErrorMessage('Пожалуйста, заполните все поля');
       return;
     }
-    console.log(userCreate);
+
     try {
-      console.log(token);
       await axios.post(baseURL + '/reqprocessor/addFlavor', userCreate, customConfig);
       window.location.reload();
       console.log('addedFlavor');

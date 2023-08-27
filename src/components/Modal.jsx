@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
+import styled from 'styled-components';
 
 function Modal(props) {
   const { rel, handleClose } = props;
@@ -13,10 +14,83 @@ function Modal(props) {
   const [data, setData] = useState(null);
   const [visibleStores, setVisibleStores] = useState([]);
   const [changed, setChanged] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [existingVisibleStores, setExistingVisibleStores] = useState([]);
-
+  const [formData, setFormData] = useState({
+    sectionid: (data && data.sectionid) || '',
+    quantity: (data && data.quantity) || '',
+    flavid: (data && data.flavorid) || '',
+  });
+  const usersName = JSON.stringify({
+    id: rel.id, //base
+    flavid: formData.flavid !== '' ? formData.flavid : rel.flavorid,
+    storageid: rel.storageid, //base
+    sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
+    quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
+  });
+  const ErrorMessage = styled.div`
+    color: red;
+    margin-top: 10px;
+  `;
   const token = localStorage.getItem('Token');
   const storageid = localStorage.getItem('selectedStore');
+
+  useEffect(() => {
+    const getFlavors = async () => {
+      try {
+        const response = await axios.get(baseURL + '/admin/getFlavors', {
+          headers: {
+            Authorization: 'Bearer_' + token,
+          },
+        });
+        setFlavors(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getFlavors();
+  }, [token]);
+
+  useEffect(() => {
+    const getSections = async () => {
+      try {
+        const response = await axios.get(baseURL + '/admin/getSections', {
+          headers: {
+            Authorization: 'Bearer_' + token,
+          },
+        });
+        setSections(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getSections();
+  }, [token]);
+  useEffect(() => {
+    axios
+      .get(baseURL + `/admin/getColdVisibleByRelId/${rel.id}`, customConfig)
+      .then((response) => {
+        setVisibleStores(response.data.map((item) => item.storeid));
+        setExistingVisibleStores(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [rel.id]);
+  useEffect(() => {
+    axios
+      .get(baseURL + `/admin/getColdRel/${rel.id}`, customConfig)
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [rel.id]);
+  console.log(data);
+
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -24,24 +98,16 @@ function Modal(props) {
       Authorization: 'Bearer_' + token,
     },
   };
-  console.log(storageid);
-  const usersName = JSON.stringify({
-    id: rel.id,
-    flavid: flavid,
-    storageid: storageid,
-    sectionid: sectionid,
-    quantity: quantity,
-  });
-  console.log(usersName);
   const handleSave2 = () => {
     axios
       .post(baseURL + '/admin/modifyColdRel', usersName, customConfig)
       .then((response) => {
-        console.log(response);
         setChanged(false);
+        setIsError(false);
       })
       .catch((error) => {
         console.error(error);
+        setIsError(true);
       });
   };
 
@@ -110,7 +176,6 @@ function Modal(props) {
         axios
           .get(baseURL + `/admin/getColdVisibleByRelId/${rel.id}`, customConfig)
           .then((response) => {
-            console.log(response.data);
             setVisibleStores(response.data.map((item) => item.storeid));
             setExistingVisibleStores(response.data);
           })
@@ -121,64 +186,6 @@ function Modal(props) {
       });
     }
   };
-
-  useEffect(() => {
-    const getFlavors = async () => {
-      try {
-        const response = await axios.get(baseURL + '/admin/getFlavors', {
-          headers: {
-            Authorization: 'Bearer_' + token,
-          },
-        });
-        setFlavors(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getFlavors();
-  }, [token]);
-
-  useEffect(() => {
-    const getSections = async () => {
-      try {
-        const response = await axios.get(baseURL + '/admin/getSections', {
-          headers: {
-            Authorization: 'Bearer_' + token,
-          },
-        });
-        setSections(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getSections();
-  }, [token]);
-  useEffect(() => {
-    axios
-      .get(baseURL + `/admin/getColdVisibleByRelId/${rel.id}`, customConfig)
-      .then((response) => {
-        console.log(response.data);
-        setVisibleStores(response.data.map((item) => item.storeid));
-        setExistingVisibleStores(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [rel.id]);
-  useEffect(() => {
-    axios
-      .get(baseURL + `/admin/getColdRel/${rel.id}`, customConfig)
-      .then((response) => {
-        console.log(response.data);
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [rel.id]);
-  console.log(data);
 
   const handleDelete = async (id) => {
     try {
@@ -206,14 +213,17 @@ function Modal(props) {
             <form>
               <input
                 className="inputadmCreate"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                 placeholder={data && data.quantity}
               />
               <select
                 className="inputadmCreate"
-                value={sectionid || (data && data.sectionid) || ''}
-                onChange={(e) => setSectionId(e.target.value)}>
+                // value={sectionid || (data && data.sectionid) || 'секция'}
+                value={formData.sectionid || (data && data.sectionid) || ''}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({ ...prevFormData, sectionid: e.target.value }))
+                }>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
                   <option key={section.id} value={section.id}>
@@ -223,8 +233,11 @@ function Modal(props) {
               </select>
               <select
                 className="inputadmCreate"
-                value={flavid || (data && data.flavorid) || ''}
-                onChange={(e) => setFlavId(e.target.value)}>
+                // value={flavid || (data && data.flavorid) || 'секция'}
+                value={formData.flavid || (data && data.flavorid) || ''}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({ ...prevFormData, flavid: e.target.value }))
+                }>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
                   <option key={flavor.id} value={flavor.id}>
@@ -232,6 +245,7 @@ function Modal(props) {
                   </option>
                 ))}
               </select>
+              {/* {isError && <ErrorMessage>Неверное имя пользователя или пароль</ErrorMessage>}{' '} */}
               <button className="inputadm" onClick={handleSave2}>
                 Сохранить изменения
               </button>

@@ -9,7 +9,6 @@ import '../css/style.css';
 
 function ShowedReq(props) {
   const { showed } = props;
-  console.log(showed);
 
   const [usersMap, setUsersMap] = useState({});
   const [stores, setStores] = useState([]);
@@ -96,7 +95,6 @@ function ShowedReq(props) {
           customConfig,
         );
         const storesData = response.data;
-        console.log(storesData);
         setIdFlav(storesData);
       } catch (error) {
         console.log(error);

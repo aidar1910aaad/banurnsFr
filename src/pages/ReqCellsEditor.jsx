@@ -20,9 +20,7 @@ function ReqCellsEditor() {
     name: name,
   });
   const handleSubmit = async (e) => {
-    console.log(userCreate);
     try {
-      console.log(token);
       await axios.post(baseURL + '/reqprocessor/addSection', userCreate, customConfig);
 
       console.log('addedFrozenStore');
@@ -38,7 +36,6 @@ function ReqCellsEditor() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getSections', customConfig).then((resp) => {
       const allcells = resp.data;
-      console.log(allcells);
       setAppState({
         loading: false,
         cells: allcells,

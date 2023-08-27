@@ -23,7 +23,6 @@ function ReqManagerShow() {
     setAppState({ loading: true });
     axios.get(baseURL + `/reqprocessor/getRequest/${ReqId}`, customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         showed: allstores,

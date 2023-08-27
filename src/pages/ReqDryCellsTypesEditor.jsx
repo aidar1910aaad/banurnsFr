@@ -53,15 +53,13 @@ function AdminDryCellsTypesEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
 
-  console.log(selectedStoreId + '  fdfdfsdfsdf');
-
   useEffect(() => {
     if (selectedStoreId !== null) {
       axios
         .get(baseURL + `/reqprocessor/getAllDryRelsByStorageId/${selectedStoreId}`, customConfig)
         .then((resp) => {
           const allstores = resp.data;
-          console.log(allstores);
+
           setAppRels({
             loading: false,
             rels: allstores,
