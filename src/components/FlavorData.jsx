@@ -10,6 +10,8 @@ function FlavorData(props) {
   const [popularitySortOrder, setPopularitySortOrder] = useState('asc');
   const [sortOrder, setSortOrder] = useState('asc');
   const [page, setPage] = useState(1);
+  const [narrowSortOrder, setNarrowSortOrder] = useState('asc');
+  const [currentType, setCurrentType] = useState('all');
 
   const [sortDirection, setSortDirection] = useState('asc');
   const [sortCriteria, setSortCriteria] = useState('popularity');
@@ -28,6 +30,13 @@ function FlavorData(props) {
       return null;
     }
   }
+
+  const handleNarrowSort = () => {
+    // Меняем тип сортировки по типу (узкий или широкий)
+    setCurrentType(currentType === 'narrow' ? 'wide' : 'narrow');
+    // Меняем порядок сортировки в зависимости от текущего порядка
+    setNarrowSortOrder(narrowSortOrder === 'asc' ? 'desc' : 'asc');
+  };
 
   const handleSort = (criteria) => {
     if (sortCriteria === criteria) {
@@ -90,7 +99,17 @@ function FlavorData(props) {
       });
   };
 
-  const sortedFlavors = [...currentStores].sort((a, b) => {
+  const filteredFlavors = flavors.filter((flavor) => {
+    if (currentType === 'all') {
+      return true;
+    } else if (currentType === 'narrow') {
+      return flavor.narrow;
+    } else {
+      return !flavor.narrow;
+    }
+  });
+
+  const sortedFlavors = [...filteredFlavors].sort((a, b) => {
     let sortValue = 0;
 
     if (sortCriteria === 'name') {
@@ -107,84 +126,89 @@ function FlavorData(props) {
   });
 
   return (
-    <div className="flex">
-      <table>
-        <thead>
-          <tr>
-            <th onClick={() => handleSort('name')}>
-              Название вкуса <SortArrow sortOrder={sortOrder} />
-              {sortCriteria === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
-            </th>
-            <th onClick={() => handleSort('popularity')}>
-              Популярность <SortArrow sortOrder={popularitySortOrder} />
-              {sortCriteria === 'popularity' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
-            </th>
-            <th>Тип</th>
-            <th>Числовой код</th>
-            <th>Изображение</th>
-            <th>Управление</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedFlavors.map((flavor) => (
-            <tr key={flavor.id}>
-              <td>{flavor.name}</td>
-              <td>
-                {editedPopularity.id === flavor.id ? (
-                  <input
-                    type="text"
-                    value={editedPopularity.value}
-                    onChange={(event) => handlePopularityChange(event, flavor.id)}
-                  />
-                ) : (
-                  flavor.popularity
-                )}
-              </td>
-              <td>{flavor.narrow ? 'узкий' : 'широкий'}</td>
-              <td>{flavor.barcode}</td>
-              <td>
-                <img
-                  style={{ width: '120px', height: '50px' }}
-                  className="barcode"
-                  alt={flavor.barcode}
-                  ref={(element) =>
-                    element && JsBarcode(element, flavor.barcode, { width: 5, format: 'CODE128' })
-                  }
-                />
-              </td>
-              <td>
-                {editedPopularity.id === flavor.id ? (
-                  <button className="button-data" onClick={() => handleSavePopularity(flavor.id)}>
-                    Сохранить
-                  </button>
-                ) : (
-                  <button
-                    className="button-data"
-                    onClick={() =>
-                      setEditedPopularity({ id: flavor.id, value: flavor.popularity })
-                    }>
-                    Редактировать
-                  </button>
-                )}
-              </td>
-              <td>
-                <button className="button-data" onClick={() => props.handleDelete(flavor.id)}>
-                  Удалить
-                </button>
-              </td>
+    <div>
+      <button className="button-sort" onClick={handleNarrowSort}>
+        Сортировать по типу: {currentType === 'narrow' ? 'широкий' : 'узкий'}
+      </button>
+      <div className="flex">
+        <table>
+          <thead>
+            <tr>
+              <th onClick={() => handleSort('name')}>
+                Название вкуса <SortArrow sortOrder={sortOrder} />
+                {sortCriteria === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+              </th>
+              <th onClick={() => handleSort('popularity')}>
+                Популярность <SortArrow sortOrder={popularitySortOrder} />
+                {sortCriteria === 'popularity' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+              </th>
+              <th>Тип</th>
+              <th>Числовой код</th>
+              <th>Изображение</th>
+              <th>Управление</th>
             </tr>
-          ))}
-        </tbody>
-        <Pagination
-          page={page}
-          itemsPerPage={itemsPerPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          handlePageChange={handlePageChange}
-          onItemsPerPageChange={handleItemsPerPageChange}
-          handleItemsPerPageChange={handleItemsPerPageChange}
-        />
-      </table>
+          </thead>
+          <tbody>
+            {sortedFlavors.map((flavor) => (
+              <tr key={flavor.id}>
+                <td>{flavor.name}</td>
+                <td>
+                  {editedPopularity.id === flavor.id ? (
+                    <input
+                      type="text"
+                      value={editedPopularity.value}
+                      onChange={(event) => handlePopularityChange(event, flavor.id)}
+                    />
+                  ) : (
+                    flavor.popularity
+                  )}
+                </td>
+                <td>{flavor.narrow ? 'узкий' : 'широкий'}</td>
+                <td>{flavor.barcode}</td>
+                <td>
+                  <img
+                    style={{ width: '120px', height: '50px' }}
+                    className="barcode"
+                    alt={flavor.barcode}
+                    ref={(element) =>
+                      element && JsBarcode(element, flavor.barcode, { width: 5, format: 'CODE128' })
+                    }
+                  />
+                </td>
+                <td>
+                  {editedPopularity.id === flavor.id ? (
+                    <button className="button-data" onClick={() => handleSavePopularity(flavor.id)}>
+                      Сохранить
+                    </button>
+                  ) : (
+                    <button
+                      className="button-data"
+                      onClick={() =>
+                        setEditedPopularity({ id: flavor.id, value: flavor.popularity })
+                      }>
+                      Редактировать
+                    </button>
+                  )}
+                </td>
+                <td>
+                  <button className="button-data" onClick={() => props.handleDelete(flavor.id)}>
+                    Удалить
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <Pagination
+            page={page}
+            itemsPerPage={itemsPerPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            handlePageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
+        </table>
+      </div>
     </div>
   );
 }

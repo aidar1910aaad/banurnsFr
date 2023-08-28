@@ -168,27 +168,33 @@ function ShowedReq(props) {
   if (!showed || showed.length === 0) return <p>Нет данных.</p>;
   return (
     <div className="wrapper containerw">
-      <div className="containerr">
+      <div className="containerrr">
         <div className="  flex-boxx">
-          <div className=" leftttt userAddd">
+          <div className=" leftttt userAddde">
             <div>
-              <button className=" right buttonadmm" onClick={handlePrintClick}>
+              <button className=" right buttonadmmin" onClick={handlePrintClick}>
                 Печать
               </button>
-              <h1>Создано торговой точкой: {storesMap[showed.storeid]?.name}</h1>
-              <h2 className="margintop">
+
+              <h3 className="margintop">
+                Создано торговой точкой: {storesMap[showed.storeid]?.name}
+              </h3>
+              <div className="margintop"></div>
+              <div className="margintop"></div>
+              <h4 className="margintop">
                 Создано пользователем: {usersMap[showed.creationuserid]?.username}
-              </h2>
-              <div className="span"></div>
-              <h2 className="margintop">Холодный склад</h2>
+              </h4>
+              <div className="spanew"></div>
+
+              <h3>Холодный склад</h3>
               <div className="userAdddd">
                 <div className="flex">
                   <table className="topmin table">
                     <thead>
                       <tr>
-                        <th>Номер</th>
-                        <th>Название вкуса</th>
-                        <th>Количество</th>
+                        <th className="ff">Номер</th>
+                        <th className="ff">Название вкуса</th>
+                        <th className="ff">Количество</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -200,8 +206,8 @@ function ShowedReq(props) {
                           if (flavorData?.narrow === false) {
                             return (
                               <tr key={id}>
-                                <td className="tdd">{index + 1}</td>
-                                <td className="tdd">{flavorData?.name}</td>
+                                <td className="tdd ff">{index + 1}</td>
+                                <td className="tdd ff">{flavorData?.name}</td>
                                 <td className="tdd">{parseInt(quantity)}</td>
                               </tr>
                             );
@@ -214,15 +220,15 @@ function ShowedReq(props) {
               </div>
               <p className="margintop">Общее количество мороженого: {totalQuantity}</p>
 
-              <h2 className="margintop">Холодный узкий склад</h2>
+              <h3 className="margintop">Холодный узкий склад</h3>
               <div className="userAdddd">
                 <div className="flex">
                   <table className="topmin table">
                     <thead>
-                      <tr>
-                        <th>Номер</th>
-                        <th>Название вкуса</th>
-                        <th>Количество</th>
+                      <tr className="ff">
+                        <th className="ff">Номер</th>
+                        <th className="ff">Название вкуса</th>
+                        <th className="ff">Количество</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -248,16 +254,16 @@ function ShowedReq(props) {
               </div>
               <p className="margintop">Общее количество мороженого: {totalQuantityNarrow}</p>
 
-              <h2 className="margintop">Сухой склад</h2>
+              <h3 className="margintop">Сухой склад</h3>
               <div className="userAdddd">
                 <div className="flex">
-                  <table className="topmin table">
+                  <table className="topmin tablew">
                     <thead>
-                      <tr>
-                        <th>Номер</th>
-                        <th>Название товара</th>
-                        <th>Товарный код</th>
-                        <th>Количество</th>
+                      <tr className="ff">
+                        <th className="ff">Номер</th>
+                        <th className="ff">Название товара</th>
+                        <th className="ff">Товарный код</th>
+                        <th className="ff">Количество</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -292,12 +298,13 @@ function ShowedReq(props) {
                 </div>
               </div>
               <p className="margintop">Общее количество товаров: {totalQuantityy}</p>
-              <h2 className="margintop">Комментарий к заявке:</h2>
+              <h4 className="margintop">Комментарий к заявке:</h4>
               <p className="margintop">{showed.description}</p>
 
               <p className="margintop">
                 Дата создания заявки: {moment(showed.created).format('DD.MM.YYYY в HH:mm:ss')}
               </p>
+              <p className="margintope"></p>
             </div>
           </div>
         </div>
