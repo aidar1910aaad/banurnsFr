@@ -109,6 +109,7 @@ function SalesManagerCreate() {
     setAppStateMisc({ loading: true });
     axios.get(baseURL + `/salesmanager/getMiscListStoreId/${id}`, customConfig).then((resp) => {
       const allMiscF = resp.data;
+      console.log(allMiscF);
       setAppStateMiscF({
         loading: false,
         miscssF: allMiscF,
@@ -157,14 +158,26 @@ function SalesManagerCreate() {
     storeid: id,
     description: resultDescription,
   });
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const resp = await axios.post(baseURL + '/salesmanager/addRequest', usersName, customConfig);
-      console.log('Заявка успешно добавлена');
-      navigate('/SalesManager');
-    } catch (error) {
-      console.log(error.resp);
+
+    if (resultFlavor.length === 0 && resultMisc.length === 0) {
+      setError('Пустая заявка');
+      alert('Пустая заявка');
+    } else {
+      try {
+        const resp = await axios.post(
+          baseURL + '/salesmanager/addRequest',
+          usersName,
+          customConfig,
+        );
+        console.log('Заявка успешно добавлена');
+        navigate('/SalesManager');
+      } catch (error) {
+        console.log(error.resp);
+      }
     }
   };
   return (
@@ -195,6 +208,7 @@ function SalesManagerCreate() {
               <Button onClick={handleSubmit} type="submit">
                 Отправить
               </Button>
+              {error && <div className="error">{error}</div>}
             </form>
           </div>
         </div>

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import styled from 'styled-components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 function Modal(props) {
   const { rel, handleClose } = props;
@@ -120,10 +123,19 @@ function Modal(props) {
     setChanged(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const requests = [];
     const relStores = props.stores.filter((store) => visibleStores.includes(store.id));
-
+    axios
+      .post(baseURL + '/admin/modifyColdRel', usersName, customConfig)
+      .then((response) => {
+        setChanged(false);
+        setIsError(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsError(true);
+      });
     // Check if a store that was previously visible is no longer visible
     existingVisibleStores.forEach((existingStore) => {
       if (!relStores.some((store) => store.id === existingStore.storeid)) {
@@ -146,44 +158,42 @@ function Modal(props) {
     });
 
     if (requests.length > 0) {
-      let promise = Promise.resolve();
-      requests.forEach((requestBody) => {
-        if (requestBody.id !== undefined) {
-          // If the store was previously visible and is now not visible, send a delete request
-          promise = promise.then(() => {
-            console.log('Sending delete request', requestBody);
-            return axios.post(
-              baseURL + '/admin/deleteColdVisibleById/' + requestBody.id,
-              null,
-              customConfig,
-            );
-          });
-        } else {
-          // If the store was not previously visible and is now visible, send a create request
-          promise = promise.then(() => {
-            console.log('Sending create request', requestBody);
-            return axios.post(
-              baseURL + '/admin/addColdVisible',
-              JSON.stringify(requestBody),
-              customConfig,
-            );
-          });
-        }
-      });
+      try {
+        await Promise.all(
+          requests.map(async (requestBody) => {
+            if (requestBody.id !== undefined) {
+              // If the store was previously visible and is now not visible, send a delete request
+              console.log('Sending delete request', requestBody);
+              await axios.post(
+                baseURL + '/admin/deleteColdVisibleById/' + requestBody.id,
+                null,
+                customConfig,
+              );
+            } else {
+              // If the store was not previously visible and is now visible, send a create request
+              console.log('Sending create request', requestBody);
+              await axios.post(
+                baseURL + '/admin/addColdVisible',
+                JSON.stringify(requestBody),
+                customConfig,
+              );
+            }
+          }),
+        );
 
-      // Add a finally function to the Promise to update data after all requests have been executed
-      promise.finally(() => {
-        axios
-          .get(baseURL + `/admin/getColdVisibleByRelId/${rel.id}`, customConfig)
-          .then((response) => {
-            setVisibleStores(response.data.map((item) => item.storeid));
-            setExistingVisibleStores(response.data);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        // Both operations have been completed successfully
         setChanged(false);
-      });
+        setIsError(false);
+
+        // Показать уведомление
+        toast.success('Торговые точки успешно сохранены.'); // Уведомление об успешном сохранении
+      } catch (error) {
+        console.error(error);
+        setIsError(true);
+
+        // Показать уведомление об ошибке
+        toast.error('Произошла ошибка при сохранении торговых точек.');
+      }
     }
   };
 
@@ -246,9 +256,6 @@ function Modal(props) {
                 ))}
               </select>
               {/* {isError && <ErrorMessage>Неверное имя пользователя или пароль</ErrorMessage>}{' '} */}
-              <button className="inputadm" onClick={handleSave2}>
-                Сохранить изменения
-              </button>
             </form>
           </div>
         </div>
@@ -272,12 +279,13 @@ function Modal(props) {
           </div>
         </div>
 
-        <button className="buttonadmMod" onClick={handleSave} disabled={!changed}>
-          Сохранить торговые точки
+        <button className="inputadm" onClick={handleSave}>
+          Сохранить изменения
         </button>
-        <button className="buttonadmModd" onClick={handleDelete}>
+        <button className="inputadm" onClick={handleDelete}>
           Удалить
         </button>
+        <ToastContainer />
       </div>
     </div>
   );

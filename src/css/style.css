@@ -550,9 +550,19 @@ table th:focus span {
   opacity: 1;
 }
 .rel{
-  background-color: #5a738e81;
-  border-radius: 4px;
+  background-color: #00091281;
+  border-radius: 12px;
+  margin-left: 6px;
 }
+
+.rel2{
+  font-size: 15px;
+  font-weight: 350;
+  margin-left: 3px;
+  margin-top: 18px;
+  cursor: default;
+}
+
 .h2 {
   max-width: 600px;
   margin: 0 auto;

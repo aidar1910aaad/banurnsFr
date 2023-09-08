@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
+import styled from 'styled-components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 function ReqModal(props) {
   const { rel, handleClose } = props;
@@ -10,8 +14,9 @@ function ReqModal(props) {
   const [flavors, setFlavors] = useState([]);
   const [sections, setSections] = useState([]);
   const [data, setData] = useState(null);
-  const [visibleStores, setVisibleStores] = useState([]);
   const [changed, setChanged] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [visibleStores, setVisibleStores] = useState([]);
   const [existingVisibleStores, setExistingVisibleStores] = useState([]);
   const [formData, setFormData] = useState({
     sectionid: (data && data.sectionid) || '',
@@ -34,16 +39,6 @@ function ReqModal(props) {
     sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
     quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
   });
-  const handleSave2 = () => {
-    axios
-      .post(baseURL + '/reqprocessor/modifyColdRel', usersName, customConfig)
-      .then((response) => {
-        setChanged(false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
 
   const toggleStoreVisibility = (storeId) => {
     if (visibleStores.includes(storeId)) {
@@ -54,10 +49,46 @@ function ReqModal(props) {
     setChanged(true);
   };
 
-  const handleSave = () => {
+  const handleSelectSectionChange = (e) => {
+    const newSectionId = e.target.value;
+    setFormData((prevFormData) => ({ ...prevFormData, sectionid: newSectionId }));
+    setChanged(true);
+  };
+
+  const handleSelectFlavIdChange = (e) => {
+    const newFlavId = e.target.value;
+    setFormData((prevFormData) => ({ ...prevFormData, flavid: newFlavId }));
+    setChanged(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+    setChanged(true);
+  };
+
+  const handleSave = async () => {
     const requests = [];
     const relStores = props.stores.filter((store) => visibleStores.includes(store.id));
 
+    const updatedUsersName = JSON.stringify({
+      id: rel.id,
+      flavid: formData.flavid !== '' ? formData.flavid : rel.flavorid,
+      storageid: rel.storageid,
+      sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
+      quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
+    });
+    axios
+      .post(baseURL + '/reqprocessor/modifyColdRel', updatedUsersName, customConfig)
+      .then((response) => {
+        setChanged(false);
+        setIsError(false);
+        toast.success('Изменения успешно сохранены.');
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsError(true);
+      });
     // Check if a store that was previously visible is no longer visible
     existingVisibleStores.forEach((existingStore) => {
       if (!relStores.some((store) => store.id === existingStore.storeid)) {
@@ -80,45 +111,42 @@ function ReqModal(props) {
     });
 
     if (requests.length > 0) {
-      let promise = Promise.resolve();
-      requests.forEach((requestBody) => {
-        if (requestBody.id !== undefined) {
-          // If the store was previously visible and is now not visible, send a delete request
-          promise = promise.then(() => {
-            console.log('Sending delete request', requestBody);
-            return axios.post(
-              baseURL + '/reqprocessor/deleteColdVisibleById/' + requestBody.id,
-              null,
-              customConfig,
-            );
-          });
-        } else {
-          // If the store was not previously visible and is now visible, send a create request
-          promise = promise.then(() => {
-            console.log('Sending create request', requestBody);
-            return axios.post(
-              baseURL + '/reqprocessor/addColdVisible',
-              JSON.stringify(requestBody),
-              customConfig,
-            );
-          });
-        }
-      });
+      try {
+        await Promise.all(
+          requests.map(async (requestBody) => {
+            if (requestBody.id !== undefined) {
+              // If the store was previously visible and is now not visible, send a delete request
+              console.log('Sending delete request', requestBody);
+              await axios.post(
+                baseURL + '/reqprocessor/deleteColdVisibleById/' + requestBody.id,
+                null,
+                customConfig,
+              );
+            } else {
+              // If the store was not previously visible and is now visible, send a create request
+              console.log('Sending create request', requestBody);
+              await axios.post(
+                baseURL + '/reqprocessor/addColdVisible',
+                JSON.stringify(requestBody),
+                customConfig,
+              );
+            }
+          }),
+        );
 
-      // Add a finally function to the Promise to update data after all requests have been executed
-      promise.finally(() => {
-        axios
-          .get(baseURL + `/reqprocessor/getColdVisibleByRelId/${rel.id}`, customConfig)
-          .then((response) => {
-            console.log(response.data);
-            setVisibleStores(response.data.map((item) => item.storeid));
-            setExistingVisibleStores(response.data);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        // Both operations have been completed successfully
         setChanged(false);
-      });
+        setIsError(false);
+
+        // Показать уведомление
+        toast.success('Торговые точки успешно сохранены.'); // Уведомление об успешном сохранении
+      } catch (error) {
+        console.error(error);
+        setIsError(true);
+
+        // Показать уведомление об ошибке
+        toast.error('Произошла ошибка при сохранении торговых точек.');
+      }
     }
   };
 
@@ -205,17 +233,16 @@ function ReqModal(props) {
             <form>
               <input
                 className="inputadmCreate"
+                name="quantity"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                onChange={handleInputChange}
                 placeholder={data && data.quantity}
               />
               <select
                 className="inputadmCreate"
-                // value={sectionid || (data && data.sectionid) || 'секция'}
+                name="sectionid"
                 value={formData.sectionid || (data && data.sectionid) || ''}
-                onChange={(e) =>
-                  setFormData((prevFormData) => ({ ...prevFormData, sectionid: e.target.value }))
-                }>
+                onChange={handleSelectSectionChange}>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
                   <option key={section.id} value={section.id}>
@@ -225,11 +252,9 @@ function ReqModal(props) {
               </select>
               <select
                 className="inputadmCreate"
-                // value={flavid || (data && data.flavorid) || 'секция'}
+                name="flavid"
                 value={formData.flavid || (data && data.flavorid) || ''}
-                onChange={(e) =>
-                  setFormData((prevFormData) => ({ ...prevFormData, flavid: e.target.value }))
-                }>
+                onChange={handleSelectFlavIdChange}>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
                   <option key={flavor.id} value={flavor.id}>
@@ -237,9 +262,6 @@ function ReqModal(props) {
                   </option>
                 ))}
               </select>
-              <button className="inputadm" onClick={handleSave2}>
-                Сохранить изменения
-              </button>
             </form>
           </div>
         </div>
@@ -262,12 +284,16 @@ function ReqModal(props) {
               ))}
           </div>
         </div>
-        <button className="buttonadmMod" onClick={handleSave} disabled={!changed}>
-          Сохранить торговые точки
-        </button>
-        <button className="buttonadmModd" onClick={handleDelete}>
+        {/* Отправка запроса при изменении значений в <select> или <input> */}
+        {changed && (
+          <button className="inputadm" onClick={handleSave}>
+            Сохранить торговые точки
+          </button>
+        )}
+        <button className="inputadm" onClick={handleDelete}>
           Удалить
         </button>
+        <ToastContainer />
       </div>
     </div>
   );

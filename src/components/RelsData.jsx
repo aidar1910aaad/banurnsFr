@@ -9,6 +9,7 @@ function RelsData(props) {
   const [stores, setStores] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedRel, setSelectedRel] = useState(null);
+  const [flavors, setFlavors] = useState([]);
 
   const token = localStorage.getItem('Token');
   const customConfig = {
@@ -30,6 +31,27 @@ function RelsData(props) {
       });
   }, []);
 
+  useEffect(() => {
+    const getFlavors = async () => {
+      try {
+        const response = await axios.get(baseURL + '/admin/getFlavors', {
+          headers: {
+            Authorization: 'Bearer_' + token,
+          },
+        });
+        setFlavors(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getFlavors();
+  }, [token]);
+
+  const findFlavorByFlavorId = (flavorId) => {
+    return flavors.find((flavor) => flavor.id === flavorId);
+  };
+
   const handleRelClick = (rel) => {
     setSelectedRel(rel);
     setShowModal(true);
@@ -43,13 +65,45 @@ function RelsData(props) {
 
   return (
     <div className="flex wrap">
-      {rels.map((rel) => (
-        <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
-          <div className="relQuantity">
-            <div className="rel">{rel.quantity}</div>
-          </div>
-        </div>
-      ))}
+      <h3>Широкие кюветы</h3>
+      <div className="flex wrap">
+        {rels.map((rel) => {
+          const flavor = findFlavorByFlavorId(rel.flavorid);
+
+          if (flavor && flavor.narrow === false) {
+            return (
+              <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
+                <div className="relQuantity">
+                  <div className="rel">{rel.quantity}</div>
+                </div>
+                <div className="rel2">{flavor.name}</div>
+              </div>
+            );
+          }
+
+          return null;
+        })}
+      </div>
+      <h3>Узкие кюветы</h3>
+      <div className="flex wrap">
+        {rels.map((rel) => {
+          const flavor = findFlavorByFlavorId(rel.flavorid);
+
+          if (flavor && flavor.narrow === true) {
+            return (
+              <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
+                <div className="relQuantity">
+                  <div className="rel">{rel.quantity}</div>
+                </div>
+                <div className="rel2">{flavor.name}</div>
+              </div>
+            );
+          }
+
+          return null;
+        })}
+      </div>
+
       {showModal && <Modal rel={selectedRel} stores={stores} handleClose={handleCloseModal} />}
     </div>
   );

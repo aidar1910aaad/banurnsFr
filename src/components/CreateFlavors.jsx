@@ -5,7 +5,11 @@ import baseURL from '../apiConfig/const';
 
 function CreateFlavors(props) {
   const { setResult } = props;
+  const [narrowFlavorsVisible, setNarrowFlavorsVisible] = useState(false);
+  const [wideFlavorsVisible, setWideFlavorsVisible] = useState(false);
   const token = localStorage.getItem('Token');
+  const [narrowVisible, setNarrowVisible] = useState(true);
+  const [wideVisible, setWideVisible] = useState(true);
   const [flavorsJsonn, setFlavorsJson] = useState([]);
   const [sortOrder, setSortOrder] = useState('ascending'); // Инициализируйте состояние sortOrder
 
@@ -23,6 +27,15 @@ function CreateFlavors(props) {
     flavorsss: null,
   });
   const [flavorsVisible, setFlavorsVisible] = useState(true); // State for toggling visibility
+
+  const toggleNarrowFlavorsVisibility = () => {
+    setNarrowFlavorsVisible(!narrowFlavorsVisible);
+  };
+
+  // Функция для переключения видимости "Широких" вкусов
+  const toggleWideFlavorsVisibility = () => {
+    setWideFlavorsVisible(!wideFlavorsVisible);
+  };
 
   useEffect(() => {
     const result = name
@@ -77,6 +90,17 @@ function CreateFlavors(props) {
     setFlavorsJson(sortedFlavorsJson);
     setSortOrder((prevSortOrder) => (prevSortOrder === 'ascending' ? 'descending' : 'ascending'));
   };
+  const narrowFlavors = flavorsJson
+    .filter((flavor) => flavor.name.includes('Узкий'))
+    .sort((a, b) =>
+      sortOrder === 'ascending' ? a.popularity - b.popularity : b.popularity - a.popularity,
+    );
+
+  const wideFlavors = flavorsJson
+    .filter((flavor) => !flavor.name.includes('Узкий'))
+    .sort((a, b) =>
+      sortOrder === 'ascending' ? a.popularity - b.popularity : b.popularity - a.popularity,
+    );
 
   if (!flavors || flavors.length === 0) return <p>Нет данных.</p>;
 
@@ -85,7 +109,7 @@ function CreateFlavors(props) {
   };
 
   return (
-    <div className="h2 ">
+    <div className="h2">
       <h2>Мороженое в контейнерах</h2>
       <div className="span"></div>
       <p
@@ -95,51 +119,56 @@ function CreateFlavors(props) {
         Введите количество в кг:{' '}
       </p>
       <div className="flexx space">
+        {/* Кнопка для "Узких" вкусов */}
         <button
           type="button"
           style={{
             backgroundColor: '#f5f5f5',
             border: 'none',
-            width: '70%',
+            width: '50%',
             borderRadius: '4px',
             padding: '8px 10px',
+            color: '#333',
+            cursor: 'pointer',
+            outline: 'none',
+            marginTop: '20px',
+
+            transition: 'background-color 0.3s ease',
+          }}
+          onClick={toggleNarrowFlavorsVisibility}>
+          Узкий
+        </button>
+
+        {/* Кнопка для "Широких" вкусов */}
+        <button
+          type="button"
+          style={{
+            backgroundColor: '#f5f5f5',
+            border: 'none',
+            width: '50%',
+            borderRadius: '4px',
+            padding: '8px 10px',
+            marginLeft: '10px',
             color: '#333',
             cursor: 'pointer',
             outline: 'none',
             marginTop: '20px',
             transition: 'background-color 0.3s ease',
           }}
-          onClick={toggleFlavorsVisibility}>
-          {flavorsVisible ? 'Свернуть' : 'Показать'}
+          onClick={toggleWideFlavorsVisibility}>
+          Широкий
         </button>
-        <h5
-          onClick={handleSortClick}
-          style={{
-            backgroundColor: '#f5f5f5',
-            border: 'none',
-            width: '30%',
-            borderRadius: '4px',
-            padding: '8px 10px',
-            color: '#333',
-            cursor: 'pointer',
-            outline: 'none',
-            marginTop: '20px',
-            fontSize: '12px',
-            transition: 'background-color 0.3s ease',
-            marginLeft: '3px',
-          }}>
-          Популярность
-        </h5>
       </div>
-      {flavorsVisible && (
+      {/* Вывод "Узких" вкусов */}
+      {narrowFlavorsVisible && narrowFlavors.length > 0 && (
         <div className="margintop">
-          {(flavorsJsonn.length === 0 ? flavorsJson : flavorsJsonn).map((flavor) => (
+          <h3>Узкий</h3>
+          {narrowFlavors.map((flavor) => (
             <div className="flexx" key={flavor.id}>
               <div className="firstSide">
                 <p className="">{flavor.name}</p>
               </div>
               <div className="secondSide">
-                {' '}
                 <input
                   className="inputtt"
                   onChange={(e) => handleInputChange(e, flavor.id)}
@@ -147,7 +176,30 @@ function CreateFlavors(props) {
                 />
               </div>
               <div className="thirdSide">
-                {' '}
+                <p>{flavor.popularity}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Вывод "Широких" вкусов */}
+      {wideFlavorsVisible && wideFlavors.length > 0 && (
+        <div className="margintop">
+          <h3>Широкий</h3>
+          {wideFlavors.map((flavor) => (
+            <div className="flexx" key={flavor.id}>
+              <div className="firstSide">
+                <p className="">{flavor.name}</p>
+              </div>
+              <div className="secondSide">
+                <input
+                  className="inputtt"
+                  onChange={(e) => handleInputChange(e, flavor.id)}
+                  type="number"
+                />
+              </div>
+              <div className="thirdSide">
                 <p>{flavor.popularity}</p>
               </div>
             </div>
