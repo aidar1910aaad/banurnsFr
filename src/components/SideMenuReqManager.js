@@ -131,6 +131,9 @@ export const SideMenuReqManager = ({ children }) => {
         <a onClick={() => handleSubMenuClick('users')}>Заявки</a>
         <SubMenu open={subMenuStates.users}>
           <SubMenuItem>
+            <a href="/ReqManager/Reqq">Отправить заявку</a>
+          </SubMenuItem>
+          <SubMenuItem>
             <a href="/ReqManager/Req">Поступившие заявки</a>
           </SubMenuItem>
           <SubMenuItem>

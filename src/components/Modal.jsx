@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 
 function Modal(props) {
   const { rel, handleClose } = props;
-
   const [sectionid, setSectionId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [flavid, setFlavId] = useState('');
@@ -122,15 +121,39 @@ function Modal(props) {
     }
     setChanged(true);
   };
+  const handleSelectSectionChange = (e) => {
+    const newSectionId = e.target.value;
+    setFormData((prevFormData) => ({ ...prevFormData, sectionid: newSectionId }));
+    setChanged(true);
+  };
 
+  const handleSelectFlavIdChange = (e) => {
+    const newFlavId = e.target.value;
+    setFormData((prevFormData) => ({ ...prevFormData, flavid: newFlavId }));
+    setChanged(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+    setChanged(true);
+  };
   const handleSave = async () => {
     const requests = [];
     const relStores = props.stores.filter((store) => visibleStores.includes(store.id));
+    const updatedUsersName = JSON.stringify({
+      id: rel.id,
+      flavid: formData.flavid !== '' ? formData.flavid : rel.flavorid,
+      storageid: rel.storageid,
+      sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
+      quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
+    });
     axios
       .post(baseURL + '/admin/modifyColdRel', usersName, customConfig)
       .then((response) => {
         setChanged(false);
         setIsError(false);
+        toast.success('Изменения успешно сохранены.');
       })
       .catch((error) => {
         console.error(error);
@@ -224,16 +247,14 @@ function Modal(props) {
               <input
                 className="inputadmCreate"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                onChange={handleInputChange}
                 placeholder={data && data.quantity}
               />
               <select
                 className="inputadmCreate"
                 // value={sectionid || (data && data.sectionid) || 'секция'}
                 value={formData.sectionid || (data && data.sectionid) || ''}
-                onChange={(e) =>
-                  setFormData((prevFormData) => ({ ...prevFormData, sectionid: e.target.value }))
-                }>
+                onChange={handleSelectSectionChange}>
                 <option value="">Выберите тип секции</option>
                 {sections.map((section) => (
                   <option key={section.id} value={section.id}>
@@ -245,9 +266,7 @@ function Modal(props) {
                 className="inputadmCreate"
                 // value={flavid || (data && data.flavorid) || 'секция'}
                 value={formData.flavid || (data && data.flavorid) || ''}
-                onChange={(e) =>
-                  setFormData((prevFormData) => ({ ...prevFormData, flavid: e.target.value }))
-                }>
+                onChange={handleSelectFlavIdChange}>
                 <option value="">Выберите тип секции</option>
                 {flavors.map((flavor) => (
                   <option key={flavor.id} value={flavor.id}>

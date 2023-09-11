@@ -1,3 +1,3 @@
-const baseURL = `http://86.107.45.32:8080/api`;
+const baseURL = window._env_.REACT_APP_BACKEND_URL;
 
 export default baseURL;

@@ -28,6 +28,8 @@ import ReqDryWarehouse from './pages/ReqDryWarehouse';
 import ReqDryCellsTypesEditor from './pages/ReqDryCellsTypesEditor';
 import AllClosedReq from './components/AllClosedReq';
 import ReqManagerAllClosed from './pages/ReqManagerAllClosed';
+import ReqManagerReqq from './pages/ReqManagerReqq';
+import ReqManagerCreate from './pages/ReqManagerCreate';
 
 function App() {
   const userRole = localStorage.getItem('Role');
@@ -61,6 +63,8 @@ function App() {
             </>
           ) : userRole === 'ROLE_REQUESTMANAGER' ? (
             <>
+              <Route path="/ReqManager/Reqq" element={<ReqManagerReqq />} />
+              <Route path="/ReqManager/Reqq/Create" element={<ReqManagerCreate />} />
               <Route path="/ReqManager" element={<ReqManager />} />
               <Route path="/ReqManager/Req" element={<ReqManagerReq />} />
               <Route path="/ReqManager/Closed" element={<ReqManagerClosed />} />

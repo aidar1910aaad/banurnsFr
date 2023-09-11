@@ -9,6 +9,7 @@ function DryRelsData(props) {
   const [stores, setStores] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedRel, setSelectedRel] = useState(null);
+  const [flavors, setFlavors] = useState([]);
 
   const token = localStorage.getItem('Token');
   const customConfig = {
@@ -30,6 +31,24 @@ function DryRelsData(props) {
       });
   }, []);
 
+  useEffect(() => {
+    const getFlavors = async () => {
+      try {
+        const response = await axios.get(baseURL + '/admin/getAllMisc', {
+          headers: {
+            Authorization: 'Bearer_' + token,
+          },
+        });
+        setFlavors(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getFlavors();
+  }, [token]);
+  console.log(flavors);
+
   const handleRelClick = (rel) => {
     setSelectedRel(rel);
     setShowModal(true);
@@ -48,6 +67,7 @@ function DryRelsData(props) {
           <div className="relQuantity">
             <div className="rel">{rel.quantity}</div>
           </div>
+          <div className="rel2">{flavors.name}</div>
         </div>
       ))}
       {showModal && <DryModal rel={selectedRel} stores={stores} handleClose={handleCloseModal} />}

@@ -79,7 +79,7 @@ function ReqModal(props) {
       quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
     });
     axios
-      .post(baseURL + '/reqprocessor/modifyColdRel', updatedUsersName, customConfig)
+      .post(baseURL + '/admin/modifyColdRel', usersName, customConfig)
       .then((response) => {
         setChanged(false);
         setIsError(false);
