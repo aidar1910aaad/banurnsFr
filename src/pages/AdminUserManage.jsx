@@ -33,7 +33,6 @@ function AdminUserManage() {
     roleId: roleId,
   });
   const handleSubmit = async (e) => {
-    console.log(userCreate);
     try {
       console.log(token);
       await axios.post(baseURL + '/admin/register', userCreate, customConfig);
@@ -85,7 +84,7 @@ function AdminUserManage() {
           <h2 className="descripword">Создать пользователя</h2>
           <div className="span"></div>
 
-          <div className="flexbox">
+          <div className="flexbox ">
             <div className="left-side">
               <div className="left-text">Имя пользователя*</div>
               <div className="left-text">Пароль*</div>

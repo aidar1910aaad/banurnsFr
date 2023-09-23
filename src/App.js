@@ -30,6 +30,9 @@ import AllClosedReq from './components/AllClosedReq';
 import ReqManagerAllClosed from './pages/ReqManagerAllClosed';
 import ReqManagerReqq from './pages/ReqManagerReqq';
 import ReqManagerCreate from './pages/ReqManagerCreate';
+import SalesManagerEdit from './pages/SalesManagerEdit';
+import ReqManagerCreateEdit from './pages/ReqManagerCreateEdit';
+import SalesManagerCreateEdit from './pages/SalesManagerCreateEdit';
 
 function App() {
   const userRole = localStorage.getItem('Role');
@@ -56,6 +59,8 @@ function App() {
           ) : userRole === 'ROLE_SALESMANAGER' ? (
             <>
               <Route path="/SalesManager" element={<SalesManager />} />
+              <Route path="/SalesManager/CreateEdit" element={<SalesManagerCreateEdit />} />
+              <Route path="/SalesManager/Edit" element={<SalesManagerEdit />} />
               <Route path="*" element={<Navigate to="/SalesManager/Req" />} />
               <Route path="/SalesManager/Req" element={<SalesManagerReq />} />
               <Route path="/SalesManager/Sended" element={<SalesManagerSended />} />
@@ -65,6 +70,7 @@ function App() {
             <>
               <Route path="/ReqManager/Reqq" element={<ReqManagerReqq />} />
               <Route path="/ReqManager/Reqq/Create" element={<ReqManagerCreate />} />
+              <Route path="/ReqManager/Reqq/CreateEdit" element={<ReqManagerCreateEdit />} />
               <Route path="/ReqManager" element={<ReqManager />} />
               <Route path="/ReqManager/Req" element={<ReqManagerReq />} />
               <Route path="/ReqManager/Closed" element={<ReqManagerClosed />} />

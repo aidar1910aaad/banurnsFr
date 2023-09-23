@@ -5,7 +5,7 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import CreateFlavors from '../components/CreateFlavors';
 
-function CreateMisc(props) {
+function CreateMiscSal(props) {
   const { setResultMisc, miscss, miscssF, miscsDataArray } = props;
   const [categoryVisibility, setCategoryVisibility] = useState({});
   const [name, setName] = useState([]);
@@ -20,9 +20,7 @@ function CreateMisc(props) {
   } else {
     filteredData = miscssF || []; // Set an empty array if data is null
   }
-  const getQuantityById = (id) => {
-    return miscsDataArray[id] || ''; // Если id есть в объекте, вернуть quantity, иначе вернуть пустую строку
-  };
+
   const handleMiscInputChange = (e, id) => {
     const value = e.target.value;
     setResultMisc((prevMiscs) => {
@@ -161,7 +159,6 @@ function CreateMisc(props) {
                           className="inputtt"
                           onChange={(e) => handleInputChange(e, item.miscId)}
                           type="number"
-                          placeholder={getQuantityById(item.miscId)}
                           value={item.quantity}></input>
                       </div>
                     </div>
@@ -192,4 +189,4 @@ function CreateMisc(props) {
   );
 }
 
-export default CreateMisc;
+export default CreateMiscSal;

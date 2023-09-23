@@ -4,6 +4,10 @@ import Modal from './Modal';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import ReqModal from './ReqModal';
+import styled from 'styled-components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 function ReqRelsData(props) {
   const { rels } = props;
@@ -53,6 +57,17 @@ function ReqRelsData(props) {
     return flavors.find((flavor) => flavor.id === flavorId);
   };
 
+  // Check if rels is defined before using it
+  if (!rels || rels.length === 0) return <p>Нет данных.</p>;
+  const groupedFlavors = {};
+
+  rels.forEach((rel) => {
+    if (!groupedFlavors[rel.sectionName]) {
+      groupedFlavors[rel.sectionName] = [];
+    }
+    groupedFlavors[rel.sectionName].push(rel);
+  });
+
   const handleRelClick = (rel) => {
     setSelectedRel(rel);
     setShowModal(true);
@@ -66,45 +81,25 @@ function ReqRelsData(props) {
 
   return (
     <div className="flex wrap">
-      <h3>Широкие кюветы</h3>
-      <div className="flex wrap">
-        {rels.map((rel) => {
-          const flavor = findFlavorByFlavorId(rel.flavorid);
+      {Object.keys(groupedFlavors).map((sectionName) => (
+        <div className="flex wrap" key={sectionName}>
+          <h3 className="onehun">{sectionName}</h3>
+          <div className="flex wrap">
+            {groupedFlavors[sectionName].map((rel) => {
+              const flavor = findFlavorByFlavorId(rel.flavid);
 
-          if (flavor && flavor.narrow === false) {
-            return (
-              <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
-                <div className="relQuantity">
-                  <div className="rel">{rel.quantity}</div>
+              return (
+                <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
+                  <div className="relQuantity">
+                    <div className="rel">{rel.quantity}</div>
+                  </div>
+                  <div className="rel2">{flavor ? flavor.name : 'Нет данных'}</div>
                 </div>
-                <div className="rel2">{flavor.name}</div>
-              </div>
-            );
-          }
-
-          return null;
-        })}
-      </div>
-      <h3>Узкие кюветы</h3>
-      <div className="flex wrap">
-        {rels.map((rel) => {
-          const flavor = findFlavorByFlavorId(rel.flavorid);
-
-          if (flavor && flavor.narrow === true) {
-            return (
-              <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
-                <div className="relQuantity">
-                  <div className="rel">{rel.quantity}</div>
-                </div>
-                <div className="rel2">{flavor.name}</div>
-              </div>
-            );
-          }
-
-          return null;
-        })}
-      </div>
-
+              );
+            })}
+          </div>
+        </div>
+      ))}
       {showModal && <ReqModal rel={selectedRel} stores={stores} handleClose={handleCloseModal} />}
     </div>
   );

@@ -34,7 +34,7 @@ function DryRelsData(props) {
   useEffect(() => {
     const getFlavors = async () => {
       try {
-        const response = await axios.get(baseURL + '/admin/getAllMisc', {
+        const response = await axios.get(baseURL + '/admin/getFullMisc', {
           headers: {
             Authorization: 'Bearer_' + token,
           },
@@ -47,7 +47,21 @@ function DryRelsData(props) {
 
     getFlavors();
   }, [token]);
-  console.log(flavors);
+
+  const findFlavorByFlavorId = (flavorId) => {
+    return flavors.find((flavor) => flavor.id === flavorId);
+  };
+
+  if (!rels || rels.length === 0) return <p>Нет данных.</p>;
+
+  const groupedFlavors = {};
+
+  rels.forEach((rel) => {
+    if (!groupedFlavors[rel.sectionName]) {
+      groupedFlavors[rel.sectionName] = [];
+    }
+    groupedFlavors[rel.sectionName].push(rel);
+  });
 
   const handleRelClick = (rel) => {
     setSelectedRel(rel);
@@ -62,12 +76,24 @@ function DryRelsData(props) {
 
   return (
     <div className="flex wrap">
-      {rels.map((rel) => (
-        <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
-          <div className="relQuantity">
-            <div className="rel">{rel.quantity}</div>
+      {Object.keys(groupedFlavors).map((sectionName) => (
+        <div className="flex onehun wrap" key={sectionName}>
+          <h3 className="onehun">{sectionName}</h3>
+
+          <div className="flex wrap">
+            {groupedFlavors[sectionName].map((rel) => {
+              const flavor = findFlavorByFlavorId(rel.miscid);
+
+              return (
+                <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
+                  <div className="relQuantity">
+                    <div className="rel">{rel.quantity}</div>
+                  </div>
+                  <div className="rel2">{flavor ? flavor.name : 'Нет данных'}</div>
+                </div>
+              );
+            })}
           </div>
-          <div className="rel2">{flavors.name}</div>
         </div>
       ))}
       {showModal && <DryModal rel={selectedRel} stores={stores} handleClose={handleCloseModal} />}

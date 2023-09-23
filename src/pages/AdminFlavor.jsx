@@ -38,7 +38,6 @@ function AdminFlavor() {
       return;
     }
 
-    console.log(userCreate);
     try {
       console.log(token);
       await axios.post(baseURL + '/admin/addFlavor', userCreate, customConfig);

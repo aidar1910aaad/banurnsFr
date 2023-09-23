@@ -105,7 +105,7 @@ function ClosedReqData(props, handleShow) {
 
   return (
     <div>
-      <div className="datebox flex">
+      <div className="datebox flexx">
         <div className="">
           <label htmlFor="start-date-picker">Начало даты:</label>
           <DatePicker

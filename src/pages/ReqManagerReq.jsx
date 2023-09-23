@@ -32,7 +32,6 @@ function ReqManagerReq() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getAllRequests', customConfig).then((resp) => {
       const allstores = resp.data;
-      console.log(allstores);
       setAppState({
         loading: false,
         opened: allstores,

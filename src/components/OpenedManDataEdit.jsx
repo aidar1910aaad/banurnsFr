@@ -6,10 +6,11 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import moment from 'moment';
 
-function OpenedReqData(props, handleDelete, handleShow) {
+function OpenedManDataEdit(props, handleDelete, handleShow) {
   const { opened } = props;
   const [stores, setStores] = useState([]);
   const [storesMap, setStoresMap] = useState({});
+
   const [usersMap, setUsersMap] = useState({});
   const token = localStorage.getItem('Token');
   const [sortCriteria, setSortCriteria] = useState('name');
@@ -25,7 +26,7 @@ function OpenedReqData(props, handleDelete, handleShow) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(baseURL + '/reqprocessor/getAllStores', customConfig);
+        const response = await axios.get(baseURL + '/salesmanager/getAllStores', customConfig);
         const storesData = response.data.reduce((acc, store) => {
           acc[store.id] = store;
           return acc;
@@ -42,11 +43,12 @@ function OpenedReqData(props, handleDelete, handleShow) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(baseURL + `/reqprocessor/getAllUsers`, customConfig);
+        const response = await axios.get(baseURL + `/salesmanager/getAllUsers`, customConfig);
         const storesData = response.data.reduce((acc, username) => {
           acc[username.id] = username;
           return acc;
         }, {});
+        console.log(storesData);
         setUsersMap(storesData);
       } catch (error) {
         console.log(error);
@@ -93,10 +95,7 @@ function OpenedReqData(props, handleDelete, handleShow) {
               Создано торговой точкой{' '}
               {sortCriteria === 'storeid' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
-            <th onClick={() => handleSortClick('creationuserid')}>
-              Создано пользователем{' '}
-              {sortCriteria === 'creationuserid' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
-            </th>
+
             <th onClick={() => handleSortClick('status')}>
               Статус {sortCriteria === 'status' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -114,20 +113,12 @@ function OpenedReqData(props, handleDelete, handleShow) {
               return (
                 <tr key={person.id}>
                   <td>{storesMap[person.storeid]?.name}</td>
-                  <td>{usersMap[person.creationuserid]?.username}</td>
+
                   <td>Не закрыт</td>
                   <td>{moment(person.created).format('DD.MM.YYYY в HH:mm:ss')}</td>
 
                   <td>
-                    <button className="button-data" onClick={() => props.handleDelete(person.id)}>
-                      Закрыть заявку
-                    </button>
-                    <Link to={'/ReqManager/Show'} target="_blank">
-                      <button className="button-data" onClick={() => props.handleShow(person.id)}>
-                        Посмотреть заявку
-                      </button>
-                    </Link>
-                    <Link to={'/ReqManager/Reqq/CreateEdit'}>
+                    <Link to={'/SalesManager/CreateEdit'}>
                       <button
                         className="button-data"
                         onClick={() => {
@@ -152,4 +143,4 @@ function OpenedReqData(props, handleDelete, handleShow) {
   );
 }
 
-export default OpenedReqData;
+export default OpenedManDataEdit;

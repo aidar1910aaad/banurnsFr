@@ -3,8 +3,8 @@
     justify-content: center;
     align-items: center;
     margin-top: 1rem;
-    max-width: 500px;
-    margin-left: 60%;
+    max-width: 1000px;
+    flex-wrap: wrap;
   }
   
   .pageButton {
@@ -35,4 +35,23 @@
     margin-left: 1rem;
     font-size: 16px;
     border-radius: 4px;
+  }
+  @media only screen and (max-width: 600px) {
+    .pagination {
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+      margin-left: 0%;
+    }
+    
+    .pageButton {
+      margin: 0.2rem;
+      font-size: 10px;
+      padding: 0.3rem 0.8rem;
+    }
+    
+    .selectt {
+      margin: 0.2rem;
+      font-size: 9px;
+    }
   }

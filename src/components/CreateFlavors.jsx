@@ -5,6 +5,7 @@ import baseURL from '../apiConfig/const';
 
 function CreateFlavors(props) {
   const { setResult } = props;
+  const { flavorDataArray } = props;
   const [narrowFlavorsVisible, setNarrowFlavorsVisible] = useState(false);
   const [wideFlavorsVisible, setWideFlavorsVisible] = useState(false);
   const token = localStorage.getItem('Token');
@@ -13,6 +14,9 @@ function CreateFlavors(props) {
   const [flavorsJsonn, setFlavorsJson] = useState([]);
   const [sortOrder, setSortOrder] = useState('ascending'); // Инициализируйте состояние sortOrder
 
+  const getQuantityById = (id) => {
+    return flavorDataArray[id] || ''; // Если id есть в объекте, вернуть quantity, иначе вернуть пустую строку
+  };
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -173,6 +177,7 @@ function CreateFlavors(props) {
                   className="inputtt"
                   onChange={(e) => handleInputChange(e, flavor.id)}
                   type="number"
+                  placeholder={getQuantityById(flavor.id)}
                 />
               </div>
               <div className="thirdSide">
@@ -197,6 +202,7 @@ function CreateFlavors(props) {
                   className="inputtt"
                   onChange={(e) => handleInputChange(e, flavor.id)}
                   type="number"
+                  placeholder={getQuantityById(flavor.id)}
                 />
               </div>
               <div className="thirdSide">

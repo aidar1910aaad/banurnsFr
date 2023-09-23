@@ -51,6 +51,7 @@ function ReqDryWarehouse() {
   const handleDelete = async (id) => {
     try {
       await axios.post(baseURL + `/reqprocessor/deleteDryStorageById/${id}`, null, customConfig);
+
       setAppState((prevState) => ({
         ...prevState,
         stores: prevState.stores.filter((person) => person.id !== id),

@@ -75,7 +75,7 @@ function ReqFrStore() {
         <div className="userAdd">
           <h2 className="descripword">Создание нового холодильного склада</h2>
           <div className="span"></div>
-          <div className="flexbox">
+          <div className="flexbox ">
             <div className="left-side">
               <div className="left-text">Наименование *</div>
               <div className="left-text">Секций в ширину *</div>

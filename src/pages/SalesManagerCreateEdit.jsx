@@ -7,8 +7,7 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import CreateFlavors from '../components/CreateFlavors';
 import CreateMisc from '../components/CreateMisc';
-import CreateFlavorsSal from '../components/CreateFlavorsSal';
-import CreateMiscSal from '../components/CreateMiscSal';
+import MainMenuReqManager from '../components/MainMenuReqManager';
 
 const Button = styled.button`
   height: 55px;
@@ -22,7 +21,7 @@ const Button = styled.button`
   font-size: 20px;
 `;
 
-function SalesManagerCreate() {
+function ReqManagerCreateEdit() {
   const [appStateMisc, setAppStateMisc] = useState({
     loading: false,
     miscss: null,
@@ -38,9 +37,12 @@ function SalesManagerCreate() {
   console.log(resultDescription);
   const [resultFlavor, setResult] = useState('');
   const [resultMisc, setResultMisc] = useState('');
+  const [storeData, setStoreData] = useState({});
 
   const navigate = useNavigate();
   const token = localStorage.getItem('Token');
+
+  const reqId = localStorage.getItem('reqId');
 
   const customConfig = {
     headers: {
@@ -108,6 +110,34 @@ function SalesManagerCreate() {
   }, [setAppStateMisc]);
 
   useEffect(() => {
+    axios.get(baseURL + `/salesmanager/getRequest/${reqId}`, customConfig).then((resp) => {
+      const allMisc = resp.data;
+      setStoreData({
+        storeData: allMisc,
+      });
+    });
+  }, [setStoreData]);
+
+  const parseData = (dataString) => {
+    const dataArray = dataString.split('&');
+    const dataObject = {};
+    dataArray.forEach((data) => {
+      const [dataId, value] = data.split(':');
+      dataObject[dataId] = parseInt(value, 10);
+    });
+    return dataObject;
+  };
+
+  const flavorDataString = storeData?.storeData?.flavors || '';
+  const miscsDataString = storeData?.storeData?.miscs || '';
+
+  const flavorDataArray = parseData(flavorDataString);
+  const miscsDataArray = parseData(miscsDataString);
+
+  console.log(flavorDataArray); // Для flavors
+  console.log(miscsDataArray); //dsfsdjhfjsdhfjshdfkhsdfsdhfjkhsdjkfshjdkfh
+
+  useEffect(() => {
     setAppStateMisc({ loading: true });
     axios.get(baseURL + `/salesmanager/getMiscListStoreId/${id}`, customConfig).then((resp) => {
       const allMiscF = resp.data;
@@ -154,10 +184,13 @@ function SalesManagerCreate() {
   }
 
   const id = localStorage.getItem('selectedStore');
+  const pId = localStorage.getItem('pId');
   const usersName = JSON.stringify({
     flavors: resultFlavor,
     miscs: resultMisc,
     storeid: id,
+    id: reqId,
+    creationuserid: pId,
     description: resultDescription,
   });
   const [error, setError] = useState('');
@@ -171,38 +204,41 @@ function SalesManagerCreate() {
     } else {
       try {
         const resp = await axios.post(
-          baseURL + '/salesmanager/addRequest',
+          baseURL + '/salesmanager/updateRequest',
           usersName,
           customConfig,
         );
         console.log('Заявка успешно добавлена');
-        navigate('/SalesManager');
+        navigate('/ReqManager/Req');
       } catch (error) {
         console.log(error.resp);
       }
     }
   };
+
   return (
     <div className="wrapper">
       <NavState>
         <MainMenuManager />
       </NavState>
-      <div className="container">
-        <div className="userAdd">
-          <div>
-            <h1 className="h1-text">Отправка заявки</h1>
+      <div className="container ">
+        <div className="userAdd ">
+          <div className="">
+            <h1 className="h1-text ">Отправка заявки</h1>
           </div>
           <div className="span"></div>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
-              <CreateFlavorsSal
+              <CreateFlavors
                 setResult={handleResultChange}
-                flavors={flavorsJson}></CreateFlavorsSal>
-              <CreateMiscSal
+                flavorDataArray={flavorDataArray}
+                flavors={flavorsJson}></CreateFlavors>
+              <CreateMisc
                 setResultMisc={handleResultChangeMisc}
+                miscsDataArray={miscsDataArray}
                 miscss={appStateMisc.miscss}
                 miscssF={appStateMiscF.miscssF}
-                misc={1}></CreateMiscSal>
+                misc={1}></CreateMisc>
               <div className="margintop">
                 <textarea
                   className="textarea"
@@ -210,7 +246,7 @@ function SalesManagerCreate() {
                   onChange={(e) => setDescription(e.target.value)}></textarea>
               </div>
               <Button onClick={handleSubmit} type="submit">
-                Отправить
+                Сохранить изменения
               </Button>
               {error && <div className="error">{error}</div>}
             </form>
@@ -221,4 +257,4 @@ function SalesManagerCreate() {
   );
 }
 
-export default SalesManagerCreate;
+export default ReqManagerCreateEdit;

@@ -6,10 +6,11 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import moment from 'moment';
 
-function OpenedReqData(props, handleDelete, handleShow) {
+function OpenedReqDataEdit(props, handleDelete, handleShow) {
   const { opened } = props;
   const [stores, setStores] = useState([]);
   const [storesMap, setStoresMap] = useState({});
+
   const [usersMap, setUsersMap] = useState({});
   const token = localStorage.getItem('Token');
   const [sortCriteria, setSortCriteria] = useState('name');
@@ -119,14 +120,6 @@ function OpenedReqData(props, handleDelete, handleShow) {
                   <td>{moment(person.created).format('DD.MM.YYYY в HH:mm:ss')}</td>
 
                   <td>
-                    <button className="button-data" onClick={() => props.handleDelete(person.id)}>
-                      Закрыть заявку
-                    </button>
-                    <Link to={'/ReqManager/Show'} target="_blank">
-                      <button className="button-data" onClick={() => props.handleShow(person.id)}>
-                        Посмотреть заявку
-                      </button>
-                    </Link>
                     <Link to={'/ReqManager/Reqq/CreateEdit'}>
                       <button
                         className="button-data"
@@ -152,4 +145,4 @@ function OpenedReqData(props, handleDelete, handleShow) {
   );
 }
 
-export default OpenedReqData;
+export default OpenedReqDataEdit;

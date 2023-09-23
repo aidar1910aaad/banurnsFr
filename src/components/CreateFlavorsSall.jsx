@@ -3,7 +3,7 @@ import '../css/style.css';
 import axios from 'axios';
 import baseURL from '../apiConfig/const';
 
-function CreateFlavorss(props) {
+function CreateFlavorsSall(props) {
   const { setResult } = props;
   const { flavorDataArray } = props;
   const [narrowFlavorsVisible, setNarrowFlavorsVisible] = useState(false);
@@ -12,11 +12,8 @@ function CreateFlavorss(props) {
   const [narrowVisible, setNarrowVisible] = useState(true);
   const [wideVisible, setWideVisible] = useState(true);
   const [flavorsJsonn, setFlavorsJson] = useState([]);
-  const [sortOrder, setSortOrder] = useState('ascending');
+  const [sortOrder, setSortOrder] = useState('ascending'); // Инициализируйте состояние sortOrder
 
-  const getQuantityById = (id) => {
-    return flavorDataArray[id] || ''; // Если id есть в объекте, вернуть quantity, иначе вернуть пустую строку
-  };
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -177,7 +174,6 @@ function CreateFlavorss(props) {
                   className="inputtt"
                   onChange={(e) => handleInputChange(e, flavor.id)}
                   type="number"
-                  placeholder={getQuantityById(flavor.id)}
                 />
               </div>
               <div className="thirdSide">
@@ -202,7 +198,6 @@ function CreateFlavorss(props) {
                   className="inputtt"
                   onChange={(e) => handleInputChange(e, flavor.id)}
                   type="number"
-                  placeholder={getQuantityById(flavor.id)}
                 />
               </div>
               <div className="thirdSide">
@@ -216,4 +211,4 @@ function CreateFlavorss(props) {
   );
 }
 
-export default CreateFlavorss;
+export default CreateFlavorsSall;

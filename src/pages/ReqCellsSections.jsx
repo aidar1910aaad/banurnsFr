@@ -61,7 +61,6 @@ function AdminCellsSections() {
         .get(baseURL + `/reqprocessor/getAllColdRelsByStorageId/${selectedStoreId}`, customConfig)
         .then((resp) => {
           const allstores = resp.data;
-          console.log(allstores);
           setAppRels({
             loading: false,
             rels: allstores,
@@ -136,7 +135,6 @@ function AdminCellsSections() {
                   onSelectStore={setSelectedStoreId}></StoreManData>
               </form>
             </div>
-            <div className="right-side"></div>
           </div>
         </div>
         <div className="userAdd">

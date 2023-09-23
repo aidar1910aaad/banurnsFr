@@ -39,7 +39,6 @@ function ReqModal(props) {
     sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
     quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
   });
-
   const toggleStoreVisibility = (storeId) => {
     if (visibleStores.includes(storeId)) {
       setVisibleStores(visibleStores.filter((id) => id !== storeId));
@@ -79,7 +78,7 @@ function ReqModal(props) {
       quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
     });
     axios
-      .post(baseURL + '/admin/modifyColdRel', usersName, customConfig)
+      .post(baseURL + '/reqprocessor/modifyColdRel', usersName, customConfig)
       .then((response) => {
         setChanged(false);
         setIsError(false);

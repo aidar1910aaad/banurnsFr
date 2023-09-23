@@ -6,13 +6,10 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import StoreManData from '../components/StoreManData';
 import { useNavigate } from 'react-router-dom';
-
-const Container = styled.div`
-  background: #fff5;
-  height: 800px;
-  padding-top: 70px;
-  padding-left: 300px;
-`;
+import MainMenuReqManager from '../components/MainMenuReqManager';
+import OpenedReqData from '../components/OpenedReqData';
+import OpenedReqDataEdit from '../components/OpenedReqDataEdit';
+import OpenedManDataEdit from '../components/OpenedManDataEdit';
 
 const Form = styled.form`
   display: flex;
@@ -33,10 +30,13 @@ const Button = styled.button`
   font-size: 20px;
 `;
 
-const Wrapper = styled.div``;
 function SalesManagerReq() {
   const navigate = useNavigate();
+  const [selectedStore, setSelectedStore] = useState(localStorage.getItem('selectedStore'));
   const token = localStorage.getItem('Token');
+  const [activeApp, setActiveApp] = useState({
+    app: null,
+  });
 
   const customConfig = {
     headers: {
@@ -45,8 +45,6 @@ function SalesManagerReq() {
       Authorization: 'Bearer_' + token,
     },
   };
-
-  const [selectedStore, setSelectedStore] = useState(localStorage.getItem('selectedStore'));
 
   const handleSelectStore = (storeId) => {
     setSelectedStore(storeId);
@@ -68,11 +66,39 @@ function SalesManagerReq() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
+  useEffect(() => {
+    axios
+      .get(baseURL + `/salesmanager/getActiveRequests/${selectedStore}`, customConfig)
+      .then((resp) => {
+        const activeApp = resp.data;
+        setActiveApp({ app: activeApp });
+      })
+      .catch((error) => {
+        console.error('Ошибка при выполнении GET-запроса:', error);
+      });
+  }, [selectedStore]);
+
+  console.log(activeApp);
+  const handleShow = async (id) => {
+    localStorage.setItem('ReqId', id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.post(baseURL + `/salesmanager/closeRequest/${id}`, null, customConfig);
+      setAppState((prevState) => ({
+        ...prevState,
+        opened: prevState.opened.filter((person) => person.id !== id),
+      }));
+      console.log('deletedUser');
+    } catch (error) {
+      console.log(error.resp);
+    }
+  };
 
   const handleSubmit = async (e) => {
     navigate('/SalesManager/Req/Create');
   };
-
   return (
     <div className="wrapper">
       <NavState>
@@ -80,13 +106,15 @@ function SalesManagerReq() {
       </NavState>
       <div className="container">
         <div className="userAdd">
-          <div className="flexbox">
-            <h1>Выбрать торговую точку</h1>
+          <div className="flexbox mgdown">
+            <h1 className="Hadapt">Выбрать торговую точку</h1>
             <Form>
               <StoreManData onSelectStore={handleSelectStore} stores={appState.stores} />
               <Button onClick={handleSubmit}>Создать</Button>
             </Form>
           </div>
+          <h1 className="Hadapt">Изменить торговую точку</h1>
+          <OpenedManDataEdit opened={activeApp.app} />
         </div>
       </div>
     </div>

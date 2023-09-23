@@ -7,8 +7,8 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import CreateFlavors from '../components/CreateFlavors';
 import CreateMisc from '../components/CreateMisc';
-import CreateFlavorsSal from '../components/CreateFlavorsSal';
-import CreateMiscSal from '../components/CreateMiscSal';
+import CreateFlavorss from '../components/CreateFlavorss';
+import MainMenuReqManager from '../components/MainMenuReqManager';
 
 const Button = styled.button`
   height: 55px;
@@ -22,7 +22,7 @@ const Button = styled.button`
   font-size: 20px;
 `;
 
-function SalesManagerCreate() {
+function ReqManagerCreateEdit() {
   const [appStateMisc, setAppStateMisc] = useState({
     loading: false,
     miscss: null,
@@ -38,9 +38,12 @@ function SalesManagerCreate() {
   console.log(resultDescription);
   const [resultFlavor, setResult] = useState('');
   const [resultMisc, setResultMisc] = useState('');
+  const [storeData, setStoreData] = useState({});
 
   const navigate = useNavigate();
   const token = localStorage.getItem('Token');
+
+  const reqId = localStorage.getItem('reqId');
 
   const customConfig = {
     headers: {
@@ -62,7 +65,7 @@ function SalesManagerCreate() {
   useEffect(() => {
     const id = localStorage.getItem('selectedStore');
     axios
-      .get(baseURL + `/salesmanager/getColdVisibiltyByStoreId/${id}`, customConfig)
+      .get(baseURL + `/reqprocessor/getColdVisibiltyByStoreId/${id}`, customConfig)
       .then((resp) => {
         const allMisc = resp.data;
         setAppColdrel({
@@ -76,7 +79,7 @@ function SalesManagerCreate() {
         const allFlavors = []; // инициализируем пустой массив для названий вкусов
         relIds.forEach((relId) => {
           axios
-            .get(baseURL + `/salesmanager/getFlavNameByRelId/${relId}`, customConfig)
+            .get(baseURL + `/reqprocessor/getFlavNameByRelId/${relId}`, customConfig)
             .then((resp) => {
               const flavors = resp.data;
               if (!allFlavors.includes(flavors)) {
@@ -98,7 +101,7 @@ function SalesManagerCreate() {
 
   useEffect(() => {
     setAppStateMisc({ loading: true });
-    axios.get(baseURL + '/salesmanager/getMisc', customConfig).then((resp) => {
+    axios.get(baseURL + '/reqprocessor/getMisc', customConfig).then((resp) => {
       const allMisc = resp.data;
       setAppStateMisc({
         loading: false,
@@ -108,8 +111,38 @@ function SalesManagerCreate() {
   }, [setAppStateMisc]);
 
   useEffect(() => {
+    axios.get(baseURL + `/reqprocessor/getRequest/${reqId}`, customConfig).then((resp) => {
+      const allMisc = resp.data;
+      setStoreData({
+        storeData: allMisc,
+      });
+    });
+  }, [setStoreData]);
+
+  console.log(storeData);
+
+  const parseData = (dataString) => {
+    const dataArray = dataString.split('&');
+    const dataObject = {};
+    dataArray.forEach((data) => {
+      const [dataId, value] = data.split(':');
+      dataObject[dataId] = parseInt(value, 10);
+    });
+    return dataObject;
+  };
+
+  const flavorDataString = storeData?.storeData?.flavors || '';
+  const miscsDataString = storeData?.storeData?.miscs || '';
+
+  const flavorDataArray = parseData(flavorDataString);
+  const miscsDataArray = parseData(miscsDataString);
+
+  console.log(flavorDataArray); // Для flavors
+  console.log(miscsDataArray);
+
+  useEffect(() => {
     setAppStateMisc({ loading: true });
-    axios.get(baseURL + `/salesmanager/getMiscListStoreId/${id}`, customConfig).then((resp) => {
+    axios.get(baseURL + `/reqprocessor/getMiscListStoreId/${id}`, customConfig).then((resp) => {
       const allMiscF = resp.data;
       console.log(allMiscF);
       setAppStateMiscF({
@@ -122,7 +155,7 @@ function SalesManagerCreate() {
   useEffect(() => {
     console.log(usersName);
     setAppStateFlavors2({ loading: true });
-    axios.get(baseURL + '/salesmanager/getFlavors', customConfig).then((resp) => {
+    axios.get(baseURL + '/reqprocessor/getFlavors', customConfig).then((resp) => {
       const allMisc = resp.data;
 
       const flavorsMap = {}; // Создаем пустой объект для хранения соответствия айди и названия вкуса
@@ -131,7 +164,11 @@ function SalesManagerCreate() {
       setAppStateFlavors2.misc.forEach((flavor) => {
         flavorsMap[flavor.id] = flavor.name;
       });
-
+      if (setAppStateFlavors2.misc) {
+        setAppStateFlavors2.misc.forEach((flavor) => {
+          flavorsMap[flavor.id] = flavor.name;
+        });
+      }
       // Заменяем айди на соответствующие названия вкусов из объекта соответствия
       const allFlavors = allMisc.map((misc) => ({
         ...misc,
@@ -152,12 +189,16 @@ function SalesManagerCreate() {
   function handleResultChangeMisc(newResultMisc) {
     setResultMisc(newResultMisc);
   }
-
+  console.log(resultFlavor);
+  console.log(resultMisc);
   const id = localStorage.getItem('selectedStore');
+  const pId = localStorage.getItem('pId');
   const usersName = JSON.stringify({
     flavors: resultFlavor,
     miscs: resultMisc,
     storeid: id,
+    id: reqId,
+    creationuserid: pId,
     description: resultDescription,
   });
   const [error, setError] = useState('');
@@ -171,46 +212,49 @@ function SalesManagerCreate() {
     } else {
       try {
         const resp = await axios.post(
-          baseURL + '/salesmanager/addRequest',
+          baseURL + '/reqprocessor/updateRequest',
           usersName,
           customConfig,
         );
         console.log('Заявка успешно добавлена');
-        navigate('/SalesManager');
+        navigate('/ReqManager/Req');
       } catch (error) {
         console.log(error.resp);
       }
     }
   };
+
   return (
     <div className="wrapper">
       <NavState>
-        <MainMenuManager />
+        <MainMenuReqManager />
       </NavState>
-      <div className="container">
-        <div className="userAdd">
-          <div>
-            <h1 className="h1-text">Отправка заявки</h1>
+      <div className="container ">
+        <div className="userAdd ">
+          <div className="">
+            <h1 className="h1-text ">Отправка заявки</h1>
           </div>
           <div className="span"></div>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
-              <CreateFlavorsSal
+              <CreateFlavorss
                 setResult={handleResultChange}
-                flavors={flavorsJson}></CreateFlavorsSal>
-              <CreateMiscSal
+                flavorDataArray={flavorDataArray}
+                flavors={flavorsJson}></CreateFlavorss>
+              <CreateMisc
                 setResultMisc={handleResultChangeMisc}
+                miscsDataArray={miscsDataArray}
                 miscss={appStateMisc.miscss}
                 miscssF={appStateMiscF.miscssF}
-                misc={1}></CreateMiscSal>
-              <div className="margintop">
+                misc={1}></CreateMisc>
+              <div className="margintop mglft">
                 <textarea
                   className="textarea"
                   placeholder="Комментарий к заявке"
                   onChange={(e) => setDescription(e.target.value)}></textarea>
               </div>
               <Button onClick={handleSubmit} type="submit">
-                Отправить
+                Сохранить изменения
               </Button>
               {error && <div className="error">{error}</div>}
             </form>
@@ -221,4 +265,4 @@ function SalesManagerCreate() {
   );
 }
 
-export default SalesManagerCreate;
+export default ReqManagerCreateEdit;

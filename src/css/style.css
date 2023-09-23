@@ -8,11 +8,16 @@
       
 
   }
+  .onehun{
+    width: 100%;
+    text-align: center;
+  }
 
   .flex-boxx{
     width: 1000%;
     display: flex;
   justify-content: center;
+  align-items: stretch;
   }
 
   .h1{
@@ -25,7 +30,7 @@
  
 
  .margintop{
-  margin-top: 10px;
+  margin-top: 5px;
  }
 
 .margintope{
@@ -95,6 +100,9 @@ table td {
   .table {
     font-size: 80%;
   }
+  .right-side{
+    width: 0%;
+  }
 }
 .flex{
   display: flex;
@@ -109,6 +117,14 @@ table td {
   height: 50%;
 }
 
+.table-wrap {
+  text-align: center;
+  display: inline-block;
+background-color: #fff;
+padding: 2rem 2rem;
+color: #000;
+}
+
 .h2{
   
 }
@@ -121,6 +137,45 @@ input:-webkit-autofill {
 .h3{
   margin-top: 15px;
 }
+
+@media screen and (max-width: 600px) {
+  table {
+    border: 0;
+  }
+  table thead {
+    display: none;
+  }
+  table tr {
+    margin-bottom: 10px;
+    display: block;
+    border-bottom: 2px solid #ddd;
+  }
+  table td {
+    display: block;
+    text-align: right;
+    font-size: 13px;
+    border-bottom: 1px dotted #ccc;
+    border-right: 1px solid transparent;
+    position: relative; /* Добавляем относительное позиционирование */
+  }
+  table td:last-child {
+    border-bottom: 0;
+  }
+  table td:before {
+    content: attr(data-label);
+    float: left;
+    text-transform: uppercase;
+    font-weight: bold;
+    position: absolute; /* Абсолютное позиционирование */
+    left: 0; /* Положение слева */
+    top: 0; /* Положение сверху */
+  }
+}
+
+
+
+
+
 
 .button-sort {
   background-color: #26B99A;
@@ -137,9 +192,46 @@ input:-webkit-autofill {
   background-color: #1b856e;
 }
 
+@media (max-width: 768px) {
+  .Navvv {
+    justify-content: center;
+  }
+.BigT{
+  font-size: 20px;
+}
+  .Flexb {
+    justify-content: center;
+  }
+  .Logoutbtnn{
+font-size: 9px;
+  }
+  .left-text{
+    font-size: 12px;
+  }
+  .inputadm{
+    
+    font-size: 10px;
+  }
+  .Hadapt{
+    font-size: 23px;
+    margin-left: 3%;
+  }
+}
+
+.Navvv{
+
+}
+
+.Flexb{
+
+}
+
+.Logoutbtn{
+
+}
 
 .userAdd{
-  width: 75%;
+  width: 80%;
   background-color: #DDE6ED;
   border: 1px #151C2F solid;
   margin-top: 2%;
@@ -165,7 +257,7 @@ input:-webkit-autofill {
   border: 1px #151C2F solid;
   margin-left: 0%;
   padding-right: 2%;
-  height: 95vh;
+  align-items: stretch;
   
 }
 
@@ -193,8 +285,11 @@ input:-webkit-autofill {
   background: #6f7c85;
   color: black;
   width: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: stretch;
+  
   
 }
 .firstSide{
@@ -209,7 +304,7 @@ input:-webkit-autofill {
 }
 .flexx{
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
 }
 .space{
   justify-content: space-between;
@@ -239,6 +334,10 @@ input:-webkit-autofill {
   margin-top: 20px;
 }
 
+.mglft{
+  margin-left: 5%;
+}
+
 .spanew{
   height: 1px;
   background-color: #e6e9ed69;
@@ -249,8 +348,20 @@ input:-webkit-autofill {
 
 .inputadm{
   height: 35px;
-  width: 300px;
-  min-width: 250;
+  width: 100%;
+  min-width: 250px;
+  border-radius: 1px;
+  background: #ffffff8a;
+  margin-top: 10px;
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: 15px;
+}
+
+.inputadmin{
+  height: 35px;
+  width: 30%;
+  min-width: 250px;
   border-radius: 1px;
   background: #ffffff8a;
   margin-top: 10px;
@@ -381,6 +492,8 @@ table th:focus span {
   display: flex;
   margin-top: 10px;
   justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 5%;
 }
 .flexboxModal{
   display: flex;
@@ -401,11 +514,20 @@ table th:focus span {
     flex-direction: row;
     justify-content: space-between;
   }
+  .left-side{
+    width: 0%;
+    display: flex;
+    flex-direction: column;
+  }
+  .centerout-side{
+    width: 100%;
+  }
 }
 .left-side{
   width: 25%;
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .left-sideCreate{
@@ -557,7 +679,7 @@ table th:focus span {
 
 .rel2{
   font-size: 15px;
-  font-weight: 350;
+  font-weight: 400;
   margin-left: 3px;
   margin-top: 18px;
   cursor: default;
@@ -654,6 +776,16 @@ table th:focus span {
   font-size: 15px;
   color: #333;
   outline: none;
+  width: 100px; /* Устанавливаем ширину 100% по умолчанию */
+
+  /* Добавляем медиа-запросы для адаптивности */
+  @media screen and (max-width: 768px) {
+    width: 30%; /* При ширине экрана до 768px уменьшаем ширину до 80% */
+  }
+
+  @media screen and (max-width: 480px) {
+    width: 30%; /* При ширине экрана до 480px уменьшаем ширину до 60% */
+  }
 }
 
 .date-input:hover {
@@ -665,3 +797,6 @@ table th:focus span {
   border-color: #6666666d;
 }
 
+.mgdown{
+  padding-bottom: 20px;
+}

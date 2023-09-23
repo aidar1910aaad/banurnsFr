@@ -9,6 +9,9 @@ import CreateFlavors from '../components/CreateFlavors';
 import CreateMisc from '../components/CreateMisc';
 import CreateFlavorss from '../components/CreateFlavorss';
 import MainMenuReqManager from '../components/MainMenuReqManager';
+import CreateFlavorsSal from '../components/CreateFlavorsSal';
+import CreateMiscSal from '../components/CreateMiscSal';
+import CreateFlavorsSall from '../components/CreateFlavorsSall';
 
 const Button = styled.button`
   height: 55px;
@@ -188,20 +191,22 @@ function ReqManagerCreate() {
       <NavState>
         <MainMenuReqManager />
       </NavState>
-      <div className="container">
-        <div className="userAdd">
-          <div>
-            <h1 className="h1-text">Отправка заявки</h1>
+      <div className="container ">
+        <div className="userAdd ">
+          <div className="">
+            <h1 className="h1-text ">Отправка заявки</h1>
           </div>
           <div className="span"></div>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
-              <CreateFlavorss setResult={handleResultChange} flavors={flavorsJson}></CreateFlavorss>
-              <CreateMisc
+              <CreateFlavorsSall
+                setResult={handleResultChange}
+                flavors={flavorsJson}></CreateFlavorsSall>
+              <CreateMiscSal
                 setResultMisc={handleResultChangeMisc}
                 miscss={appStateMisc.miscss}
                 miscssF={appStateMiscF.miscssF}
-                misc={1}></CreateMisc>
+                misc={1}></CreateMiscSal>
               <div className="margintop">
                 <textarea
                   className="textarea"

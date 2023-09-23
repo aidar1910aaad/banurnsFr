@@ -1,12 +1,16 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../css/style.css';
 import Pagination from './Pagination';
 import JsBarcode from 'jsbarcode';
-function MiscData(props, handleDelete) {
+import axios from 'axios';
+import baseURL from '../apiConfig/const';
+
+function MiscData(props) {
   const { miscs } = props;
   const [sortOrder, setSortOrder] = useState('asc');
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [editedBarcode, setEditedBarcode] = useState({ id: null, value: '' });
 
   if (!miscs || miscs.length === 0) return <p>Нет данных.</p>;
 
@@ -40,6 +44,40 @@ function MiscData(props, handleDelete) {
   const currentStores = sortedStores.slice(startIndex, endIndex);
   const totalPages = Math.ceil(sortedStores.length / itemsPerPage);
 
+  const handleBarcodeChange = (event, id) => {
+    setEditedBarcode({ id, value: event.target.value });
+  };
+
+  const handleSaveBarcodeMisc = (id) => {
+    const { value } = editedBarcode;
+    const data = { id, barcode: value };
+    const token = localStorage.getItem('Token');
+    const role = localStorage.getItem('Role');
+    const customConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'Bearer_' + token,
+      },
+    };
+
+    let requestURL = baseURL + '/admin/updateBarcodeMisc';
+    if (role === 'ROLE_REQUESTMANAGER') {
+      requestURL = baseURL + '/reqprocessor/updateBarcodeMisc';
+    }
+
+    axios
+      .post(requestURL, data, customConfig)
+      .then((response) => {
+        console.log('Barcode updated successfully');
+        setEditedBarcode({ id: null, value: '' });
+        window.location.reload(); // Обновите страницу после успешного обновления
+      })
+      .catch((error) => {
+        console.error('Failed to update barcode', error);
+      });
+  };
+
   return (
     <div className="flex">
       <table>
@@ -55,7 +93,17 @@ function MiscData(props, handleDelete) {
           {currentStores.map((person) => (
             <tr key={person.id}>
               <td>{person.name}</td>
-              <td>{person.barcode}</td>
+              <td>
+                {editedBarcode.id === person.id ? (
+                  <input
+                    type="text"
+                    value={editedBarcode.value}
+                    onChange={(event) => handleBarcodeChange(event, person.id)}
+                  />
+                ) : (
+                  person.barcode
+                )}
+              </td>
               <td>
                 <img
                   style={{ width: '230px', height: '80px' }}
@@ -66,8 +114,18 @@ function MiscData(props, handleDelete) {
                   }
                 />
               </td>
-
               <td>
+                {editedBarcode.id === person.id ? (
+                  <button className="button-data" onClick={() => handleSaveBarcodeMisc(person.id)}>
+                    Сохранить
+                  </button>
+                ) : (
+                  <button
+                    className="button-data"
+                    onClick={() => setEditedBarcode({ id: person.id, value: person.barcode })}>
+                    Редактировать
+                  </button>
+                )}
                 <button className="button-data" onClick={() => props.handleDelete(person.id)}>
                   Удалить
                 </button>

@@ -31,6 +31,7 @@ function AdminCellsSections() {
     loading: false,
     rels: null,
   });
+
   const handleSubmit = (event) => {
     event.preventDefault();
     try {
@@ -53,8 +54,6 @@ function AdminCellsSections() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
 
-  console.log(selectedStoreId + '  fdfdfsdfsdf');
-
   useEffect(() => {
     if (selectedStoreId !== null) {
       axios
@@ -76,7 +75,6 @@ function AdminCellsSections() {
     quantity: quantity,
     sectionid: sectionid,
   });
-  console.log(userCreate);
 
   useEffect(() => {
     const getFlavors = async () => {

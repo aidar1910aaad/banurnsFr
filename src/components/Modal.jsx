@@ -298,10 +298,10 @@ function Modal(props) {
           </div>
         </div>
 
-        <button className="inputadm" onClick={handleSave}>
+        <button className="inputadmin" onClick={handleSave}>
           Сохранить изменения
         </button>
-        <button className="inputadm" onClick={handleDelete}>
+        <button className="inputadmin" onClick={handleDelete}>
           Удалить
         </button>
         <ToastContainer />

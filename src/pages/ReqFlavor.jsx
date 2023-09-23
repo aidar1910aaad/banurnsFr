@@ -54,7 +54,6 @@ function ReqFlavor() {
     setAppState({ loading: true });
     axios.get(baseURL + '/reqprocessor/getFlavors', customConfig).then((resp) => {
       const allflavor = resp.data;
-      console.log(allflavor);
       setAppState({
         loading: false,
         flavors: allflavor,
@@ -87,7 +86,7 @@ function ReqFlavor() {
         <div className="userAdd">
           <h2 className="descripword">Добавление нового вкуса</h2>
           <div className="span"></div>
-          <div className="flexbox">
+          <div className="flexx">
             <div className="left-side">
               <div className="left-text">Название вкуса*</div>
               <div className="left-text">Числовой код вкуса*</div>

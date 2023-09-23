@@ -20,9 +20,7 @@ function AdminCellsEditor() {
     name: name,
   });
   const handleSubmit = async (e) => {
-    console.log(userCreate);
     try {
-      console.log(token);
       await axios.post(baseURL + '/admin/addSection', userCreate, customConfig);
 
       console.log('addedFrozenStore');

@@ -17,6 +17,7 @@ function FlavorData(props) {
   const [sortCriteria, setSortCriteria] = useState('popularity');
   const [storesMap, setStoresMap] = useState({});
   const [itemsPerPage, setItemsPerPage] = useState(60);
+  const [editedBarcode, setEditedBarcode] = useState({ id: null, value: '' });
   const [editedPopularity, setEditedPopularity] = useState({ id: null, value: '' });
 
   if (!flavors || flavors.length === 0) return <p>Нет данных.</p>;
@@ -69,6 +70,40 @@ function FlavorData(props) {
     setEditedPopularity({ id, value: event.target.value });
   };
 
+  const handleBarcodeChange = (event, id) => {
+    setEditedBarcode({ id, value: event.target.value });
+  };
+
+  const handleSaveBarcode = (id) => {
+    const { value } = editedBarcode;
+    const data = { id, barcode: value };
+    const token = localStorage.getItem('Token');
+    const role = localStorage.getItem('Role');
+    const customConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'Bearer_' + token,
+      },
+    };
+
+    let requestURL = baseURL + '/admin/updateBarcodeFlavor';
+    if (role === 'ROLE_REQUESTMANAGER') {
+      requestURL = baseURL + '/reqprocessor/updateBarcodeFlavor';
+    }
+
+    axios
+      .post(requestURL, data, customConfig)
+      .then((response) => {
+        console.log('Barcode updated successfully');
+        setEditedBarcode({ id: null, value: '' });
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error('Failed to update barcode', error);
+      });
+  };
+
   const handleSavePopularity = (id) => {
     const { value } = editedPopularity;
     const data = { id, popularity: value };
@@ -85,6 +120,11 @@ function FlavorData(props) {
     let requestURL = baseURL + '/admin/modifyPopularity';
     if (role === 'ROLE_REQUESTMANAGER') {
       requestURL = baseURL + '/reqprocessor/modifyPopularity';
+    }
+
+    let requestURLB = baseURL + '/admin/updateBarcodeFlavor';
+    if (role === 'ROLE_REQUESTMANAGER') {
+      requestURLB = baseURL + '/reqprocessor/updateBarcodeFlavor';
     }
 
     axios
@@ -108,6 +148,20 @@ function FlavorData(props) {
       return !flavor.narrow;
     }
   });
+
+  const handleSave = (id) => {
+    if (editedPopularity.id === id) {
+      // Сохранить популярность
+      const { value } = editedPopularity;
+      const data = { id, popularity: value };
+      // Остальной код для сохранения популярности
+    } else if (editedBarcode.id === id) {
+      // Сохранить баркод
+      const { value } = editedBarcode;
+      const data = { id, barcode: value };
+      // Остальной код для сохранения баркода
+    }
+  };
 
   const sortedFlavors = [...filteredFlavors].sort((a, b) => {
     let sortValue = 0;
@@ -164,7 +218,18 @@ function FlavorData(props) {
                   )}
                 </td>
                 <td>{flavor.narrow ? 'узкий' : 'широкий'}</td>
-                <td>{flavor.barcode}</td>
+                <td>
+                  {editedBarcode.id === flavor.id ? (
+                    <input
+                      type="text"
+                      value={editedBarcode.value}
+                      onChange={(event) => handleBarcodeChange(event, flavor.id)}
+                    />
+                  ) : (
+                    flavor.barcode
+                  )}
+                </td>
+
                 <td>
                   <img
                     style={{ width: '120px', height: '50px' }}
@@ -186,11 +251,21 @@ function FlavorData(props) {
                       onClick={() =>
                         setEditedPopularity({ id: flavor.id, value: flavor.popularity })
                       }>
-                      Редактировать
+                      Изменить поп
                     </button>
                   )}
-                </td>
-                <td>
+
+                  {editedBarcode.id === flavor.id ? (
+                    <button className="button-data" onClick={() => handleSaveBarcode(flavor.id)}>
+                      Сохранить
+                    </button>
+                  ) : (
+                    <button
+                      className="button-data"
+                      onClick={() => setEditedBarcode({ id: flavor.id, value: flavor.barcode })}>
+                      Изменить код
+                    </button>
+                  )}
                   <button className="button-data" onClick={() => props.handleDelete(flavor.id)}>
                     Удалить
                   </button>

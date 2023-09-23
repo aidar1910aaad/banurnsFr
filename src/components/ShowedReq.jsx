@@ -15,7 +15,10 @@ function ShowedReq(props) {
   const [storesMap, setStoresMap] = useState({});
   const [idFlav, setIdFlav] = useState([]);
   const [idMisc, setIdMisc] = useState([]);
+  const [arrMisc, setarrMisc] = useState([]);
   const [username, setUsername] = useState('');
+
+  console.log(idMisc);
 
   // const { flavors } = showed;
 
@@ -89,7 +92,7 @@ function ShowedReq(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.post(
+        const response = await axios.get(
           baseURL + `/reqprocessor/getUsernameById/${showed.creationuserid}`,
           null,
           customConfig,
@@ -106,8 +109,75 @@ function ShowedReq(props) {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (showed && showed.storeid) {
+        try {
+          // Ждем 1000 миллисекунд (1 секунда) перед отправкой запроса
+          setTimeout(async () => {
+            const response = await axios.get(
+              baseURL + `/reqprocessor/getMiscListStoreId/${showed.storeid}`,
+              customConfig,
+            );
+            const storesData = response.data;
+            setarrMisc(storesData);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [showed]);
+
+  const [updatedFormattedArray, setUpdatedFormattedArray] = useState([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (showed && showed.miscs) {
+        const inputString = showed.miscs;
+        const counts = {};
+
+        inputString.split('&').forEach((pair) => {
+          const [id, amount] = pair.split(':');
+          counts[id] = (counts[id] || 0) + parseInt(amount, 10);
+        });
+
+        const formattedArray = Object.keys(counts).map((id) => {
+          const numericId = parseInt(id, 10);
+          const item = arrMisc.find((item) => item.miscId === numericId);
+          console.log(`miscId: ${id}, item:`, item);
+          return {
+            miscId: numericId,
+            amount: counts[id],
+            nameStorage: item ? item.nameStorage : 'Unknown',
+          };
+        });
+
+        const updatedArray = formattedArray.map((item) => {
+          const idMiscItem = idMisc[item.miscId];
+          if (idMiscItem) {
+            return {
+              ...item,
+              barcode: idMiscItem.barcode,
+              itemName: idMiscItem.name,
+            };
+          }
+          return item;
+        });
+        console.log(updatedArray);
+        setUpdatedFormattedArray(updatedArray); // Обновляем состояние
+      }
+    }, 3000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [showed, arrMisc]);
+
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(baseURL + '/reqprocessor/getMisc', customConfig);
+        const response = await axios.get(baseURL + '/reqprocessor/getFullMisc', customConfig);
         const storesData = response.data.reduce((acc, store) => {
           acc[store.id] = store;
           return acc;
@@ -166,6 +236,9 @@ function ShowedReq(props) {
     window.print();
   };
   if (!showed || showed.length === 0) return <p>Нет данных.</p>;
+  if (!showed) {
+    return <p>Нет данных.</p>;
+  }
   return (
     <div className="wrapper containerw">
       <div className="containerrr">
@@ -179,6 +252,12 @@ function ShowedReq(props) {
               <h3 className="margintop">
                 Создано торговой точкой: {storesMap[showed.storeid]?.name}
               </h3>
+              <h4 className="margintop">Комментарий к заявке:</h4>
+              <p className="margintop">{showed.description}</p>
+
+              <p className="margintop">
+                Дата создания заявки: {moment(showed.created).format('DD.MM.YYYY в HH:mm:ss')}
+              </p>
               <div className="margintop"></div>
               <div className="margintop"></div>
               <h4 className="margintop">
@@ -186,125 +265,149 @@ function ShowedReq(props) {
               </h4>
               <div className="spanew"></div>
 
-              <h3>Холодный склад</h3>
-              <div className="userAdddd">
-                <div className="flex">
-                  <table className="topmin table">
-                    <thead>
-                      <tr>
-                        <th className="ff">Номер</th>
-                        <th className="ff">Название вкуса</th>
-                        <th className="ff">Количество</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showed.flavors &&
-                        showed.flavors.split('&').map((flavor, index) => {
-                          const [id, quantity] = flavor.split(':');
-                          const flavorData = idFlav[parseInt(id)];
-                          // Фильтрация для широких мороженых (narrow: false)
-                          if (flavorData?.narrow === false) {
-                            return (
-                              <tr key={id}>
-                                <td className="tdd ff">{index + 1}</td>
-                                <td className="tdd ff">{flavorData?.name}</td>
-                                <td className="tdd">{parseInt(quantity)}</td>
-                              </tr>
-                            );
-                          }
-                          return null;
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <p className="margintop">Общее количество мороженого: {totalQuantity}</p>
-
-              <h3 className="margintop">Холодный узкий склад</h3>
-              <div className="userAdddd">
-                <div className="flex">
-                  <table className="topmin table">
-                    <thead>
-                      <tr className="ff">
-                        <th className="ff">Номер</th>
-                        <th className="ff">Название вкуса</th>
-                        <th className="ff">Количество</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showed.flavors &&
-                        showed.flavors.split('&').map((flavor, index) => {
-                          const [id, quantity] = flavor.split(':');
-                          const flavorData = idFlav[parseInt(id)];
-                          // Фильтрация для узких мороженых (narrow: true)
-                          if (flavorData?.narrow === true) {
-                            return (
-                              <tr key={id}>
-                                <td className="tdd">{index + 1}</td>
-                                <td className="tdd">{flavorData?.name}</td>
-                                <td className="tdd">{parseInt(quantity)}</td>
-                              </tr>
-                            );
-                          }
-                          return null;
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <p className="margintop">Общее количество мороженого: {totalQuantityNarrow}</p>
-
-              <h3 className="margintop">Сухой склад</h3>
-              <div className="userAdddd">
-                <div className="flex">
-                  <table className="topmin tablew">
-                    <thead>
-                      <tr className="ff">
-                        <th className="ff">Номер</th>
-                        <th className="ff">Название товара</th>
-                        <th className="ff">Товарный код</th>
-                        <th className="ff">Количество</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showed.miscs &&
-                        showed.miscs.split('&').map((flavor, index) => {
-                          const [id, quantity] = flavor.split(':');
-                          const flavorData = idMisc[parseInt(id)];
-                          return (
-                            <tr key={id}>
-                              <td className="tdd">{index + 1}</td>
-                              <td className="tdd">{flavorData?.name}</td>
-                              <td className="tdd">
-                                <img
-                                  style={{ width: '130px', height: '40px' }}
-                                  className="barcode"
-                                  alt={flavorData?.barcode}
-                                  ref={(element) =>
-                                    element &&
-                                    JsBarcode(element, flavorData?.barcode, {
-                                      width: 5,
-                                      format: 'CODE128',
-                                    })
-                                  }
-                                />
-                              </td>
-                              <td className="tdd">{parseInt(quantity)}</td>
+              {showed.flavors &&
+                showed.flavors.split('&').some((flavor) => {
+                  const [id] = flavor.split(':');
+                  const flavorData = idFlav[parseInt(id)];
+                  return flavorData?.narrow === false; // Отобразить блок, если есть хотя бы одно узкое мороженое
+                }) && (
+                  <>
+                    <h3 className="margintop">Холодный склад</h3>
+                    <div className="userAdddd">
+                      <div className="flex">
+                        <table className="topmin table">
+                          <thead>
+                            <tr>
+                              <th className="ff">Номер</th>
+                              <th className="ff">Название вкуса</th>
+                              <th className="ff">Количество</th>
                             </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <p className="margintop">Общее количество товаров: {totalQuantityy}</p>
-              <h4 className="margintop">Комментарий к заявке:</h4>
-              <p className="margintop">{showed.description}</p>
+                          </thead>
+                          <tbody>
+                            {showed.flavors &&
+                              showed.flavors.split('&').map((flavor, index) => {
+                                const [id, quantity] = flavor.split(':');
+                                const flavorData = idFlav[parseInt(id)];
+                                // Фильтрация для широких мороженых (narrow: false)
+                                if (flavorData?.narrow === false) {
+                                  return (
+                                    <tr key={id}>
+                                      <td className="tdd ff">{index + 1}</td>
+                                      <td className="tdd ff">{flavorData?.name}</td>
+                                      <td className="tdd">{parseInt(quantity)}</td>
+                                    </tr>
+                                  );
+                                }
+                                return null;
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <p className="margintop">Общее количество мороженого: {totalQuantity}</p>
+                  </>
+                )}
 
-              <p className="margintop">
-                Дата создания заявки: {moment(showed.created).format('DD.MM.YYYY в HH:mm:ss')}
-              </p>
-              <p className="margintope"></p>
+              {showed.flavors &&
+                showed.flavors.split('&').some((flavor) => {
+                  const [id] = flavor.split(':');
+                  const flavorData = idFlav[parseInt(id)];
+                  return flavorData?.narrow === true; // Отобразить блок, если есть хотя бы одно узкое мороженое
+                }) && (
+                  <>
+                    <h3 className="margintop">Холодный узкий склад</h3>
+                    <div className="userAdddd">
+                      <div className="flex">
+                        <table className="topmin table">
+                          <thead>
+                            <tr className="ff">
+                              <th className="ff">Номер</th>
+                              <th className="ff">Название вкуса</th>
+                              <th className="ff">Количество</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {showed.flavors &&
+                              showed.flavors.split('&').map((flavor, index) => {
+                                const [id, quantity] = flavor.split(':');
+                                const flavorData = idFlav[parseInt(id)];
+                                // Фильтрация для узких мороженых (narrow: true)
+                                if (flavorData?.narrow === true) {
+                                  return (
+                                    <tr key={id}>
+                                      <td className="tdd">{index + 1}</td>
+                                      <td className="tdd">{flavorData?.name}</td>
+                                      <td className="tdd">{parseInt(quantity)}</td>
+                                    </tr>
+                                  );
+                                }
+                                return null;
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <p className="margintop">Общее количество мороженого: {totalQuantityNarrow}</p>
+                  </>
+                )}
+
+              {updatedFormattedArray && updatedFormattedArray.length > 0 ? (
+                Object.entries(
+                  updatedFormattedArray.reduce((groups, item) => {
+                    if (!groups[item.nameStorage]) {
+                      groups[item.nameStorage] = [];
+                    }
+                    groups[item.nameStorage].push(item);
+                    return groups;
+                  }, {}),
+                ).map(([groupName, group], index) => (
+                  <div key={index}>
+                    <h3 className="margintop">{groupName}</h3>
+                    <div className="userAdddd">
+                      <div className="flex">
+                        <table className="topmin tablew">
+                          <thead>
+                            <tr className="ff">
+                              <th className="ff">Номер</th>
+                              <th className="ff">Название товара</th>
+                              <th className="ff">Товарный код</th>
+                              <th className="ff">Количество</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {group.map((item, index) => (
+                              <tr key={index}>
+                                <td className="tdd">{index + 1}</td>
+                                <td className="tdd">{item.itemName}</td>
+                                <td className="tdd">
+                                  {item?.barcode !== '-' ? (
+                                    <img
+                                      style={{ width: '130px', height: '40px' }}
+                                      className="barcode"
+                                      alt={item?.barcode}
+                                      ref={(element) =>
+                                        element &&
+                                        JsBarcode(element, item?.barcode, {
+                                          width: 5,
+                                          format: 'CODE128',
+                                        })
+                                      }
+                                    />
+                                  ) : null}
+                                </td>
+                                <td className="tdd">{item.amount}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>Данные не доступны</p>
+              )}
+              <p className="margintop">Общее количество товаров: {totalQuantityy}</p>
             </div>
           </div>
         </div>

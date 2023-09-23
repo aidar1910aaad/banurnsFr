@@ -53,11 +53,11 @@ const MainMenuManager = () => {
   };
   return (
     <header ref={node}>
-      <Navbar>
+      <Navbar className="Navvv">
         <HamburgerButton />
-        <h1>SkladBanurNs</h1>
-        <Flexbox>
-          <Logoutbtn onClick={handleSubmit} href="/login">
+        <h1 className="BigT">SkladBanurNs</h1>
+        <Flexbox className="Flexb">
+          <Logoutbtn className="Logoutbtn" onClick={handleSubmit} href="/login">
             Выйти
           </Logoutbtn>
         </Flexbox>

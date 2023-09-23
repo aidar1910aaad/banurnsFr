@@ -9,6 +9,7 @@ function ReqDryRelsData(props) {
   const [stores, setStores] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedRel, setSelectedRel] = useState(null);
+  const [flavors, setFlavors] = useState([]);
 
   const token = localStorage.getItem('Token');
   const customConfig = {
@@ -30,6 +31,40 @@ function ReqDryRelsData(props) {
       });
   }, []);
 
+  useEffect(() => {
+    const getFlavors = async () => {
+      try {
+        const response = await axios.get(baseURL + '/reqprocessor/getFullMisc', {
+          headers: {
+            Authorization: 'Bearer_' + token,
+          },
+        });
+        setFlavors(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getFlavors();
+  }, [token]);
+
+  console.log(flavors);
+
+  const findFlavorByFlavorId = (flavorId) => {
+    return flavors.find((flavor) => flavor.id === flavorId);
+  };
+
+  if (!rels || rels.length === 0) return <p>Нет данных.</p>;
+
+  const groupedFlavors = {};
+
+  rels.forEach((rel) => {
+    if (!groupedFlavors[rel.sectionName]) {
+      groupedFlavors[rel.sectionName] = [];
+    }
+    groupedFlavors[rel.sectionName].push(rel);
+  });
+
   const handleRelClick = (rel) => {
     setSelectedRel(rel);
     setShowModal(true);
@@ -43,10 +78,23 @@ function ReqDryRelsData(props) {
 
   return (
     <div className="flex wrap">
-      {rels.map((rel) => (
-        <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
-          <div className="relQuantity">
-            <div className="rel">{rel.quantity}</div>
+      {Object.keys(groupedFlavors).map((sectionName) => (
+        <div className="flex onehun wrap" key={sectionName}>
+          <h3 className="onehun">{sectionName}</h3>
+
+          <div className="flex wrap">
+            {groupedFlavors[sectionName].map((rel) => {
+              const flavor = findFlavorByFlavorId(rel.miscid);
+
+              return (
+                <div className="square" key={rel.id} onClick={() => handleRelClick(rel)}>
+                  <div className="relQuantity">
+                    <div className="rel">{rel.quantity}</div>
+                  </div>
+                  <div className="rel2">{flavor ? flavor.name : 'Нет данных'}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}

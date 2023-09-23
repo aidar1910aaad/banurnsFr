@@ -31,12 +31,13 @@ function AdminDryCellsTypesEditor() {
     loading: false,
     rels: null,
   });
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
     try {
-      axios.post(baseURL + '/admin/addDryRel', userCreate, customConfig);
+      await axios.post(baseURL + '/admin/addDryRel', userCreate, customConfig);
       console.log('addedUser');
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000); // Задержка в 1 секунду (1000 миллисекунд)
     } catch (error) {
       console.log(error.resp);
     }
@@ -94,6 +95,51 @@ function AdminDryCellsTypesEditor() {
 
     getFlavors();
   }, [token]);
+
+  const [name, setName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [allMisc, setAllMisc] = useState([]);
+
+  const disMisc = JSON.stringify({
+    name: name,
+  });
+
+  console.log(disMisc);
+
+  const handleAddMisc = async (e) => {
+    e.preventDefault();
+
+    if (!name) {
+      setErrorMessage('Пожалуйста, заполните все поля');
+      return;
+    }
+    try {
+      await axios.post(baseURL + '/admin/addDisMisc', disMisc, customConfig);
+      window.location.reload();
+      console.log('addedDisMisc');
+    } catch (error) {
+      console.log(error.resp);
+    }
+  };
+
+  useEffect(() => {
+    const getSections = async () => {
+      try {
+        const response = await axios.get(baseURL + '/admin/getAllDisMisc', {
+          headers: {
+            Authorization: 'Bearer_' + token,
+          },
+        });
+        setAllMisc(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getSections();
+  }, [token]);
+
+  console.log(allMisc);
 
   useEffect(() => {
     const getSections = async () => {
@@ -176,6 +222,71 @@ function AdminDryCellsTypesEditor() {
                     onChange={(e) => setFlavId(e.target.value)}>
                     <option value="">Выберите товар</option>
                     {flavors.map((flav) => (
+                      <option key={flav.id} value={flav.id}>
+                        {flav.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button className="buttonadm" type="button" onClick={handleSubmit}>
+                    Создать
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div className="userAdd">
+          <h2 className="descripword">Создание товара без штрих кода</h2>
+          <div className="span"></div>
+          <div className="app">
+            <form className="form">
+              <div className="flexbox">
+                <div className="center-side">
+                  <input
+                    className="inputadmCreate"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Введите название товара"
+                  />
+
+                  <button className="buttonadm" type="button" onClick={handleAddMisc}>
+                    Добавить товар
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div className="userAdd">
+          <h2 className="descripword">Создание полки без штрих кода</h2>
+          <div className="span"></div>
+          <div className="app">
+            <form className="form">
+              <div className="flexbox">
+                <div className="center-side">
+                  <input
+                    className="inputadmCreate"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    placeholder="Количество"
+                  />
+                  <select
+                    className="inputadmCreate"
+                    value={sectionid}
+                    onChange={(e) => setSectionId(e.target.value)}>
+                    <option value="">Выберите тип полки</option>
+                    {sections.map((section) => (
+                      <option key={section.id} value={section.id}>
+                        {section.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    className="inputadmCreate"
+                    value={flavid}
+                    onChange={(e) => setFlavId(e.target.value)}>
+                    <option value="">Выберите товар</option>
+                    {allMisc.map((flav) => (
                       <option key={flav.id} value={flav.id}>
                         {flav.name}
                       </option>
