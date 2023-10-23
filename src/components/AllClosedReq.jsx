@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import baseURL from '../apiConfig/const';
 import axios from 'axios';
 import ShowedReq from './ShowedReq';
@@ -14,33 +13,58 @@ function AllClosedReq() {
     },
   };
   const [appState, setAppState] = useState({
-    loading: false,
+    loading: true,
     closed: null,
   });
 
   useEffect(() => {
-    setAppState({ loading: true });
-    axios.get(baseURL + '/reqprocessor/getAllRequests', customConfig).then((resp) => {
-      const allstores = resp.data.filter((req) => req.status === 'ACTIVE');
+    // Добавьте ссылку на CSS для печати внутри useEffect
+    const link = document.createElement('link');
+    link.href = '/src/css/print.css'; // Замените на путь к вашему файлу CSS для печати
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    document.head.appendChild(link);
 
-      setAppState({
-        loading: false,
-        closed: allstores,
+    setTimeout(() => {
+      axios.get(baseURL + '/reqprocessor/getReqs', customConfig).then((resp) => {
+        const allstores = resp.data.filter((req) => req.status === 'ACTIVE');
+
+        setAppState({
+          loading: false,
+          closed: allstores,
+        });
       });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setAppState]);
+    }, 3000);
+  }, []); // Удалите setAppState из зависимостей
+
+  if (appState.loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       {appState.closed &&
-        appState.closed.map((person) => (
-          <div key={person.id}>
-            <ShowedReq showed={person}></ShowedReq>
+        appState.closed.map((person, index) => (
+          <div
+            key={person.id}
+            className="showed-req" // Добавьте класс showed-req
+          >
+            <ShowedReq className="showed-req" showed={person}></ShowedReq>
           </div>
         ))}
     </div>
   );
+}
+
+// Функция для вычисления динамических стилей на основе индекса и высоты в vh
+function calculateDynamicStyles(index, heightVH) {
+  const viewportHeight = window.innerHeight;
+  const calculatedHeight = viewportHeight * (heightVH / 100); // Преобразовать vh в пиксели
+  const styles = {
+    height: `${calculatedHeight}px`, // Задать высоту динамически в пикселях
+    // Добавьте любые другие динамические стили, если нужно
+  };
+  return styles;
 }
 
 export default AllClosedReq;

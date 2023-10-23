@@ -91,14 +91,21 @@ function CreateFlavorsSal(props) {
     setFlavorsJson(sortedFlavorsJson);
     setSortOrder((prevSortOrder) => (prevSortOrder === 'ascending' ? 'descending' : 'ascending'));
   };
+
+  console.log(flavorsJson);
   const narrowFlavors = flavorsJson
-    .filter((flavor) => flavor.name.includes('Узкий'))
+    .filter((flavor) =>
+      ['Узкий', 'Узкие', 'узкий', 'узкие'].some((keyword) => flavor.name.includes(keyword)),
+    )
     .sort((a, b) =>
       sortOrder === 'ascending' ? a.popularity - b.popularity : b.popularity - a.popularity,
     );
 
   const wideFlavors = flavorsJson
-    .filter((flavor) => !flavor.name.includes('Узкий'))
+    .filter(
+      (flavor) =>
+        !['Узкий', 'Узкие', 'узкий', 'узкие'].some((keyword) => flavor.name.includes(keyword)),
+    )
     .sort((a, b) =>
       sortOrder === 'ascending' ? a.popularity - b.popularity : b.popularity - a.popularity,
     );

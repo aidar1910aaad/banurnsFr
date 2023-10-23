@@ -7,6 +7,7 @@ import CreateFlavors from '../components/CreateFlavors';
 
 function CreateMisc(props) {
   const { setResultMisc, miscss, miscssF, miscsDataArray } = props;
+
   const [categoryVisibility, setCategoryVisibility] = useState({});
   const [name, setName] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,6 +24,15 @@ function CreateMisc(props) {
   const getQuantityById = (id) => {
     return miscsDataArray[id] || ''; // Если id есть в объекте, вернуть quantity, иначе вернуть пустую строку
   };
+
+  useEffect(() => {
+    const inputs = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+    setName(inputs);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem(localStorageKey, JSON.stringify(name));
+  }, [name]);
+
   const handleMiscInputChange = (e, id) => {
     const value = e.target.value;
     setResultMisc((prevMiscs) => {
@@ -102,11 +112,12 @@ function CreateMisc(props) {
       [category]: !prevVisibility[category],
     }));
   };
-  function handleInputChange(event, index) {
+
+  const handleInputChange = (event, index) => {
     const newInputs = [...name];
     newInputs[index] = [index, event.target.value];
     setName(newInputs);
-  }
+  };
   const [flavorsVisible, setFlavorsVisible] = useState(true);
   const toggleFlavorsVisibility = () => {
     setFlavorsVisible(!flavorsVisible);
@@ -155,10 +166,10 @@ function CreateMisc(props) {
                 <div>
                   {items.map((item) => (
                     <div className="h3" key={item.miscId}>
-                      <div className="flexx">
-                        <p>{item.nameMisc}</p>
+                      <div className="flexxe">
+                        <p className="fulll">{item.nameMisc}</p>
                         <input
-                          className="inputtt"
+                          className="inputttt"
                           onChange={(e) => handleInputChange(e, item.miscId)}
                           type="number"
                           placeholder={getQuantityById(item.miscId)}

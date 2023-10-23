@@ -21,15 +21,19 @@ function Modal(props) {
   const [formData, setFormData] = useState({
     sectionid: (data && data.sectionid) || '',
     quantity: (data && data.quantity) || '',
-    flavid: (data && data.flavorid) || '',
+    flavid: (data && data.flavid) || '',
   });
   const usersName = JSON.stringify({
     id: rel.id, //base
-    flavid: formData.flavid !== '' ? formData.flavid : rel.flavorid,
+    flavid: formData.flavid !== '' ? formData.flavid : rel.flavid,
     storageid: rel.storageid, //base
     sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
     quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,
   });
+
+  console.log(rel);
+
+  console.log(usersName);
   const ErrorMessage = styled.div`
     color: red;
     margin-top: 10px;
@@ -70,6 +74,7 @@ function Modal(props) {
 
     getSections();
   }, [token]);
+
   useEffect(() => {
     axios
       .get(baseURL + `/admin/getColdVisibleByRelId/${rel.id}`, customConfig)

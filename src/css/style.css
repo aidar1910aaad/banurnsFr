@@ -80,18 +80,18 @@ table th {
   height: 30px;
   background: #DDE6ED;
   cursor: pointer;
-  border-bottom: 2px solid rgb(173, 173, 173);
+  border: 1px solid rgb(0, 0, 0);
   user-select: none;
 }
 
 table td {
-  border-bottom: 1px solid  rgb(173, 173, 173);
+  border: 1px solid rgb(0, 0, 0);
   padding: 5px;
   font-size: 15px;
 }
 
 .tdd {
-  border-bottom: 1px solid  rgb(173, 173, 173);
+  border: 1px solid rgb(0, 0, 0);
   padding: 3px;
   font-size: 12px;
 }
@@ -148,8 +148,15 @@ input:-webkit-autofill {
   table tr {
     margin-bottom: 10px;
     display: block;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid rgb(0, 0, 0);
   }
+  .fulll{
+    width: 100%;
+  }
+.inputtt{
+  width: 80%;
+}
+
   table td {
     display: block;
     text-align: right;
@@ -281,6 +288,13 @@ font-size: 9px;
   
 }
 
+.tdleft{
+  text-align: left;
+}
+td.faf {
+  width: 30%; /* Пример: установите желаемое значение ширины */
+}
+
 .containerrr{
   background: #6f7c85;
   color: black;
@@ -306,6 +320,11 @@ font-size: 9px;
   display: flex;
   flex-wrap: wrap;
 }
+.flexxe{
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .space{
   justify-content: space-between;
 }

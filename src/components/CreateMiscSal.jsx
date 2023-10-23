@@ -21,6 +21,18 @@ function CreateMiscSal(props) {
     filteredData = miscssF || []; // Set an empty array if data is null
   }
 
+  useEffect(() => {
+    const inputs = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+    setName(inputs);
+  }, []);
+
+  // Update localStorage when inputs change
+  useEffect(() => {
+    localStorage.setItem(localStorageKey, JSON.stringify(name));
+  }, [name]);
+
+  // Handle user input changes and update name
+
   const handleMiscInputChange = (e, id) => {
     const value = e.target.value;
     setResultMisc((prevMiscs) => {
@@ -100,11 +112,11 @@ function CreateMiscSal(props) {
       [category]: !prevVisibility[category],
     }));
   };
-  function handleInputChange(event, index) {
+  const handleInputChange = (event, index) => {
     const newInputs = [...name];
     newInputs[index] = [index, event.target.value];
     setName(newInputs);
-  }
+  };
   const [flavorsVisible, setFlavorsVisible] = useState(true);
   const toggleFlavorsVisibility = () => {
     setFlavorsVisible(!flavorsVisible);
@@ -153,10 +165,10 @@ function CreateMiscSal(props) {
                 <div>
                   {items.map((item) => (
                     <div className="h3" key={item.miscId}>
-                      <div className="flexx">
-                        <p>{item.nameMisc}</p>
+                      <div className="flexxe">
+                        <p className="fulll">{item.nameMisc}</p>
                         <input
-                          className="inputtt"
+                          className="inputttt"
                           onChange={(e) => handleInputChange(e, item.miscId)}
                           type="number"
                           value={item.quantity}></input>

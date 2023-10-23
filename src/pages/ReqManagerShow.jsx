@@ -1,6 +1,6 @@
 import ShowedReq from '../components/ShowedReq';
 import React, { useState, useEffect } from 'react';
-
+import '../css/print.css';
 import baseURL from '../apiConfig/const';
 import axios from 'axios';
 
@@ -21,8 +21,9 @@ function ReqManagerShow() {
 
   useEffect(() => {
     setAppState({ loading: true });
-    axios.get(baseURL + `/reqprocessor/getRequest/${ReqId}`, customConfig).then((resp) => {
+    axios.get(baseURL + `/reqprocessor/getRequestNew/${ReqId}`, customConfig).then((resp) => {
       const allstores = resp.data;
+      console.log(allstores);
       setAppState({
         loading: false,
         showed: allstores,
@@ -30,6 +31,7 @@ function ReqManagerShow() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setAppState]);
+  console.log(appState.showed);
   return (
     <div>
       <ShowedReq showed={appState.showed}></ShowedReq>

@@ -36,7 +36,9 @@ function AdminDryCellsTypesEditor() {
     try {
       axios.post(baseURL + '/reqprocessor/addDryRel', userCreate, customConfig);
       console.log('addedUser');
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.log(error.resp);
     }

@@ -16,9 +16,13 @@ function ReqManager() {
       <NavState>
         <MainMenuManager />
       </NavState>
-      <Container>
-        <h1>Заявка успешно отправлена.</h1>
-      </Container>
+      <div className="container">
+        <div className="userAdd">
+          <div className="flexbox mgdown">
+            <h1 className="Hadapt">Заявка отправлена</h1>
+          </div>
+        </div>
+      </div>
     </Wrapper>
   );
 }

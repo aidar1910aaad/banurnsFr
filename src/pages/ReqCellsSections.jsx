@@ -32,14 +32,17 @@ function AdminCellsSections() {
     rels: null,
   });
   const handleSubmit = (event) => {
-    event.preventDefault();
-    try {
-      axios.post(baseURL + '/reqprocessor/addColdRel', userCreate, customConfig);
-      console.log('addedUser');
-      window.location.reload();
-    } catch (error) {
-      console.log(error.resp);
-    }
+    setTimeout(() => {
+      try {
+        axios.post(baseURL + '/reqprocessor/addColdRel', userCreate, customConfig);
+        console.log('addedUser');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        console.log(error.resp);
+      }
+    }, 2000);
   };
   useEffect(() => {
     setAppState({ loading: true });

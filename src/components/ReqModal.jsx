@@ -34,7 +34,7 @@ function ReqModal(props) {
   };
   const usersName = JSON.stringify({
     id: rel.id, //base
-    flavid: formData.flavid !== '' ? formData.flavid : rel.flavorid,
+    flavid: formData.flavid !== '' ? formData.flavid : rel.flavid,
     storageid: rel.storageid, //base
     sectionid: formData.sectionid !== '' ? formData.sectionid : rel.sectionid,
     quantity: formData.quantity !== '' ? formData.quantity : rel.quantity,

@@ -33,14 +33,16 @@ function AdminCellsSections() {
   });
 
   const handleSubmit = (event) => {
-    event.preventDefault();
     try {
       axios.post(baseURL + '/admin/addColdRel', userCreate, customConfig);
       console.log('addedUser');
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.log(error.resp);
     }
+    // Ожидание 2000 миллисекунд (2 секунды)
   };
   useEffect(() => {
     setAppState({ loading: true });
