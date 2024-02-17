@@ -35,7 +35,9 @@ function AllClosedReq() {
         });
       });
     }, 3000);
-  }, []); // Удалите setAppState из зависимостей
+  }, []);
+  console.log(appState.closed);
+  // Удалите setAppState из зависимостей
 
   if (appState.loading) {
     return <div>Loading...</div>;

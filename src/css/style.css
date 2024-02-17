@@ -8,13 +8,23 @@
       
 
   }
+
+  .container{
+    background: #6f7c85;
+    padding-top: 100px;
+    color: black;
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 30px;
+    
+  }
   .onehun{
     width: 100%;
     text-align: center;
   }
 
   .flex-boxx{
-    width: 1000%;
+    width: 100%;
     display: flex;
   justify-content: center;
   align-items: stretch;
@@ -58,7 +68,7 @@
   border-collapse: collapse; 
   border-radius: 10px;
   text-align: left;
-  min-width: 500px;
+  min-width: 300px;
 }
 
 .tablew{
@@ -97,6 +107,12 @@ table td {
 }
 
 @media only screen and (max-width: 600px) {
+  .userAdd{
+    width: 100%;
+    background-color: #DDE6ED;
+    border: 1px #151C2F solid;
+    
+  }
   .table {
     font-size: 80%;
   }
@@ -108,6 +124,8 @@ table td {
   display: flex;
   justify-content: center;
 }
+
+
 .wrap{
   display: flex;
   flex-wrap: wrap;
@@ -148,18 +166,19 @@ input:-webkit-autofill {
   table tr {
     margin-bottom: 10px;
     display: block;
-    border-bottom: 2px solid rgb(0, 0, 0);
+    border: 1px solid rgb(0, 0, 0);
+    text-align: left;
   }
   .fulll{
     width: 100%;
   }
 .inputtt{
-  width: 80%;
+  width: 70%;
 }
 
   table td {
     display: block;
-    text-align: right;
+    text-align: left;
     font-size: 13px;
     border-bottom: 1px dotted #ccc;
     border-right: 1px solid transparent;
@@ -246,6 +265,77 @@ font-size: 9px;
   margin-left: 10%;
   padding-right: 5%;
   
+
+}
+
+.butbut{
+  /* Your existing styles */
+  background-color: #f5f5f5;
+  width: 50%;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 10px;
+  margin: 1px;
+  color: #333;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+  position: relative; /* Needed for absolute positioning of the pseudo-element */
+}
+
+.butbut::after {
+  /* Creating the arrow */
+  content: '▼'; /* Downward arrow */
+  position: absolute;
+  right: 10px; /* Adjust as needed */
+  top: 50%;
+  transform: translateY(-50%); /* Center vertically */
+  transition: transform 0.3s ease; /* Smooth transition for rotating arrow */
+}
+
+.butbut.active::after {
+  /* Changing the arrow direction when the element is active/clicked */
+  content: '▲'; /* Upward arrow */
+}
+
+
+
+
+@media only screen and (max-width: 600px) {
+  .userAdd{
+    width: 100%;
+    background-color: #DDE6ED;
+    border: 1px #151C2F solid;
+    margin-top: 0%;
+    padding-top: 0%;
+    margin-left: 0%;
+    padding-right: 0%;
+    
+  }
+.container {
+    background: #6f7c85;
+    padding-top:90px;
+    color: black;
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 30px;
+}}
+
+.full{
+  width: 100%;
+  text-align: center;
+}
+
+.noData{
+  margin-top: 15px;
+  border: #000 solid 1px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #3b4148;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 200;
 }
 
 .userAddd{
@@ -271,7 +361,6 @@ font-size: 9px;
 .userAdddd{
   width: 95%;
   background-color: #DDE6ED;
-  border: 1px #151C2F solid;
   margin-top: 2%;
   padding-top: 2%;
   margin-left: 0%;
@@ -329,15 +418,7 @@ td.faf {
   justify-content: space-between;
 }
 
-.container{
-  background: #6f7c85;
-  padding-top: 100px;
-  color: black;
-  width: 100%;
-  min-height: 100vh;
-  padding-bottom: 30px;
-  
-}
+
 
 .containerw{
   width: 100%;
@@ -533,6 +614,7 @@ table th:focus span {
     flex-direction: row;
     justify-content: space-between;
   }
+
   .left-side{
     width: 0%;
     display: flex;
@@ -818,4 +900,74 @@ table th:focus span {
 
 .mgdown{
   padding-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .userAddde {
+    width: 100%;
+    padding-right: 5%;
+    margin-left: 0;
+  }
+
+  .flex-boxx, .containerrr {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Здесь вы можете добавить дополнительные стили для других элементов,
+     чтобы они выглядели лучше на мобильных устройствах */
+}
+
+@media screen and (max-width: 768px) {
+  .userAddde {
+    flex-basis: 100%;
+    width: 350px; /* Элемент займет весь доступный размер */
+    margin: 0;
+    height: 100%;
+  }
+
+  .flex-boxx {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+  }
+  th{
+    width: 200px;
+  }
+  td{
+    width: 200px;
+    text-align: right;
+  }
+  .leftttt{
+    padding-left: 10px;
+    padding-bottom: 0%;
+    
+  }
+  .table{
+    min-width: none;
+  }
+  .containerrr{
+    background: #6f7c85;
+    color: black;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: baseline;
+    align-items: stretch;
+    flex-direction: row;
+    
+    
+  }
+  *{
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Здесь вы можете добавить дополнительные стили для мобильных устройств */
+}
+.paper{
+  width: 100%;
+  margin: 0 auto;
+  height: 100%;
 }

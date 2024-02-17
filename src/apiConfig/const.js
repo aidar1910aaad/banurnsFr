@@ -1,3 +1,3 @@
-const baseURL = window._env_.REACT_APP_BACKEND_URL;
+const baseURL = 'https://banurns.probilim.kz/api';
 
 export default baseURL;

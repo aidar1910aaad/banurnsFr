@@ -12,6 +12,8 @@ import MainMenuReqManager from '../components/MainMenuReqManager';
 import CreateFlavorsSal from '../components/CreateFlavorsSal';
 import CreateMiscSal from '../components/CreateMiscSal';
 import CreateFlavorsSall from '../components/CreateFlavorsSall';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const Button = styled.button`
   height: 55px;
@@ -30,7 +32,7 @@ function ReqManagerCreate() {
     loading: false,
     miscss: null,
   });
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [appStateMiscF, setAppStateMiscF] = useState({
     loading: false,
     miscssF: null,
@@ -44,6 +46,21 @@ function ReqManagerCreate() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('Token');
+
+  const [storeId, setStoreId] = useState({
+    storeNm: null,
+  });
+  const idStore = localStorage.getItem('selectedStore');
+
+  useEffect(() => {
+    setAppStateMisc({ loading: true });
+    axios.get(baseURL + `/reqprocessor/getStoreName/${idStore}`, customConfig).then((resp) => {
+      const storeName = resp.data;
+      setStoreId({
+        storeNm: storeName,
+      });
+    });
+  }, [setAppStateMisc]);
 
   const customConfig = {
     headers: {
@@ -170,7 +187,7 @@ function ReqManagerCreate() {
 
     if (resultFlavor.length === 0 && resultMisc.length === 0) {
       setError('Пустая заявка');
-      alert('Пустая заявка');
+      setOpenSnackbar(true);
     } else {
       try {
         const resp = await axios.post(
@@ -179,11 +196,21 @@ function ReqManagerCreate() {
           customConfig,
         );
         console.log('Заявка успешно добавлена');
-        navigate('/ReqManager/Req');
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          navigate('/ReqManager/Req');
+        }, 3000);
       } catch (error) {
         console.log(error.resp);
       }
     }
+  };
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
   };
 
   return (
@@ -197,6 +224,7 @@ function ReqManagerCreate() {
             <h1 className="h1-text ">Отправка заявки</h1>
           </div>
           <div className="span"></div>
+          <h2 className="h1-text">{storeId.storeNm}</h2>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
               <CreateFlavorsSall
@@ -221,6 +249,11 @@ function ReqManagerCreate() {
           </div>
         </div>
       </div>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <MuiAlert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          Заявка успешно отправлена, вы будете перенаправлены через 3 секунд
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 }

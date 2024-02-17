@@ -6,11 +6,10 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import moment from 'moment';
 
-function OpenedManDataEdit(props, handleDelete, handleShow) {
+function OpenedReqData(props, handleDelete, handleShow) {
   const { opened } = props;
   const [stores, setStores] = useState([]);
   const [storesMap, setStoresMap] = useState({});
-
   const [usersMap, setUsersMap] = useState({});
   const token = localStorage.getItem('Token');
   const [sortCriteria, setSortCriteria] = useState('name');
@@ -48,7 +47,6 @@ function OpenedManDataEdit(props, handleDelete, handleShow) {
           acc[username.id] = username;
           return acc;
         }, {});
-        console.log(storesData);
         setUsersMap(storesData);
       } catch (error) {
         console.log(error);
@@ -58,8 +56,7 @@ function OpenedManDataEdit(props, handleDelete, handleShow) {
     fetchData();
   }, []);
 
-  if (!opened || opened.length === 0)
-    return <p className="noData">Выберите другую торговую точку</p>;
+  if (!opened || opened.length === 0) return <p>Нет данных.</p>;
 
   const sortedOpened = opened
     .filter((person) => person.status === 'ACTIVE')
@@ -96,7 +93,10 @@ function OpenedManDataEdit(props, handleDelete, handleShow) {
               Создано торговой точкой{' '}
               {sortCriteria === 'storeid' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
-
+            <th onClick={() => handleSortClick('creationuserid')}>
+              Создано пользователем{' '}
+              {sortCriteria === 'creationuserid' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+            </th>
             <th onClick={() => handleSortClick('status')}>
               Статус {sortCriteria === 'status' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -114,21 +114,14 @@ function OpenedManDataEdit(props, handleDelete, handleShow) {
               return (
                 <tr key={person.id}>
                   <td>{storesMap[person.storeid]?.name}</td>
-
+                  <td>{usersMap[person.creationuserid]?.username}</td>
                   <td>Не закрыт</td>
                   <td>{moment(person.created).format('DD.MM.YYYY в HH:mm:ss')}</td>
 
                   <td>
-                    <Link to={'/SalesManager/CreateEdit'}>
-                      <button
-                        className="button-data"
-                        onClick={() => {
-                          // Сохраните reqId в localStorage при нажатии на кнопку
-                          localStorage.setItem('reqId', person.id);
-                          localStorage.setItem('pId', person.creationuserid);
-                        }}>
-                        {' '}
-                        Изменить заявку
+                    <Link to={'/SalesManager/Show'} target="_blank">
+                      <button className="button-data" onClick={() => props.handleShow(person.id)}>
+                        Посмотреть заявку
                       </button>
                     </Link>
                   </td>
@@ -144,4 +137,4 @@ function OpenedManDataEdit(props, handleDelete, handleShow) {
   );
 }
 
-export default OpenedManDataEdit;
+export default OpenedReqData;

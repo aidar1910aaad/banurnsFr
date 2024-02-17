@@ -12,6 +12,7 @@ function CreateMiscSal(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [searchTerm, setSearchTerm] = useState('');
+  const [inputs, setInputs] = useState({});
   let filteredData;
   if (miscssF && miscssF.length > 0) {
     filteredData = miscssF.filter(
@@ -112,10 +113,24 @@ function CreateMiscSal(props) {
       [category]: !prevVisibility[category],
     }));
   };
-  const handleInputChange = (event, index) => {
-    const newInputs = [...name];
-    newInputs[index] = [index, event.target.value];
-    setName(newInputs);
+  const handleInputChange = (event, miscId) => {
+    const newValue = event.target.value;
+
+    // Обновление состояния для отображения
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [miscId]: newValue,
+    }));
+
+    // Обновление состояния для формирования запроса
+    const newNames = [...name];
+    const nameIndex = newNames.findIndex(([index]) => index === miscId);
+    if (nameIndex !== -1) {
+      newNames[nameIndex] = [miscId, newValue];
+    } else {
+      newNames.push([miscId, newValue]);
+    }
+    setName(newNames);
   };
   const [flavorsVisible, setFlavorsVisible] = useState(true);
   const toggleFlavorsVisibility = () => {
@@ -160,7 +175,9 @@ function CreateMiscSal(props) {
         <>
           {Object.entries(groupedItems).map(([nameStorage, items]) => (
             <div key={nameStorage}>
-              <h2 onClick={() => toggleCategoryVisibility(nameStorage)}>{nameStorage}</h2>
+              <h2 className="butbut" onClick={() => toggleCategoryVisibility(nameStorage)}>
+                {nameStorage}
+              </h2>
               {categoryVisibility[nameStorage] && (
                 <div>
                   {items.map((item) => (
@@ -171,7 +188,7 @@ function CreateMiscSal(props) {
                           className="inputttt"
                           onChange={(e) => handleInputChange(e, item.miscId)}
                           type="number"
-                          value={item.quantity}></input>
+                          value={inputs[item.miscId] || ''}></input>
                       </div>
                     </div>
                   ))}

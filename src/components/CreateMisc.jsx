@@ -13,6 +13,7 @@ function CreateMisc(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [searchTerm, setSearchTerm] = useState('');
+  const [inputs, setInputs] = useState({});
   let filteredData;
   if (miscssF && miscssF.length > 0) {
     filteredData = miscssF.filter(
@@ -113,11 +114,26 @@ function CreateMisc(props) {
     }));
   };
 
-  const handleInputChange = (event, index) => {
-    const newInputs = [...name];
-    newInputs[index] = [index, event.target.value];
-    setName(newInputs);
+  const handleInputChange = (event, miscId) => {
+    const newValue = event.target.value;
+
+    // Обновление состояния для отображения
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [miscId]: newValue,
+    }));
+
+    // Обновление состояния для формирования запроса
+    const newNames = [...name];
+    const nameIndex = newNames.findIndex(([index]) => index === miscId);
+    if (nameIndex !== -1) {
+      newNames[nameIndex] = [miscId, newValue];
+    } else {
+      newNames.push([miscId, newValue]);
+    }
+    setName(newNames);
   };
+
   const [flavorsVisible, setFlavorsVisible] = useState(true);
   const toggleFlavorsVisibility = () => {
     setFlavorsVisible(!flavorsVisible);
@@ -161,19 +177,23 @@ function CreateMisc(props) {
         <>
           {Object.entries(groupedItems).map(([nameStorage, items]) => (
             <div key={nameStorage}>
-              <h2 onClick={() => toggleCategoryVisibility(nameStorage)}>{nameStorage}</h2>
+              <h2 className="butbut" onClick={() => toggleCategoryVisibility(nameStorage)}>
+                {nameStorage}
+              </h2>
               {categoryVisibility[nameStorage] && (
                 <div>
                   {items.map((item) => (
                     <div className="h3" key={item.miscId}>
                       <div className="flexxe">
                         <p className="fulll">{item.nameMisc}</p>
-                        <input
-                          className="inputttt"
-                          onChange={(e) => handleInputChange(e, item.miscId)}
-                          type="number"
-                          placeholder={getQuantityById(item.miscId)}
-                          value={item.quantity}></input>
+                        <div className="flexinp">
+                          <input
+                            className="inputttt"
+                            onChange={(e) => handleInputChange(e, item.miscId)}
+                            type="number"
+                            placeholder={getQuantityById(item.miscId)}
+                            value={inputs[item.miscId] || ''}></input>
+                        </div>
                       </div>
                     </div>
                   ))}

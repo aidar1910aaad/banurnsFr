@@ -113,8 +113,10 @@ function SalesManagerReq() {
               <Button onClick={handleSubmit}>Создать</Button>
             </Form>
           </div>
-          <h1 className="Hadapt">Изменить торговую точку</h1>
-          <OpenedManDataEdit opened={activeApp.app} />
+          <div className="flexbox">
+            <h1 className="Hadapt full">Изменить торговую точку</h1>
+            <OpenedManDataEdit opened={activeApp.app} />
+          </div>
         </div>
       </div>
     </div>

@@ -7,7 +7,6 @@ import axios from 'axios';
 import baseURL from '../apiConfig/const';
 import CreateFlavors from '../components/CreateFlavors';
 import CreateMisc from '../components/CreateMisc';
-import CreateFlavorss from '../components/CreateFlavorss';
 import MainMenuReqManager from '../components/MainMenuReqManager';
 
 const Button = styled.button`
@@ -52,7 +51,7 @@ function ReqManagerCreateEdit() {
 
   useEffect(() => {
     setAppStateMisc({ loading: true });
-    axios.get(baseURL + `/reqprocessor/getStoreName/${idStore}`, customConfig).then((resp) => {
+    axios.get(baseURL + `/salesmanager/getStoreName/${idStore}`, customConfig).then((resp) => {
       const storeName = resp.data;
       setStoreId({
         storeNm: storeName,
@@ -77,37 +76,6 @@ function ReqManagerCreateEdit() {
   });
   const [appColdrel, setAppColdrel] = useState({ rels: null });
 
-  useEffect(() => {
-    const id = localStorage.getItem('selectedStore');
-    axios
-      .get(baseURL + `/reqprocessor/getColdVisibiltyByStoreId/${id}`, customConfig)
-      .then((resp) => {
-        const allMisc = resp.data;
-        setAppColdrel({
-          rels: allMisc,
-        });
-
-        // Получаем массив relid из объектов в allMisc
-        const relIds = allMisc.map((misc) => misc.relid);
-
-        // Отправляем запрос на сервер для каждого relid
-        const allFlavors = []; // инициализируем пустой массив для названий вкусов
-        relIds.forEach((relId) => {
-          axios
-            .get(baseURL + `/reqprocessor/getFlavNameByRelId/${relId}`, customConfig)
-            .then((resp) => {
-              const flavors = resp.data;
-              if (!allFlavors.includes(flavors)) {
-                // проверяем, есть ли элемент уже в массиве
-                allFlavors.push(flavors); // добавляем названия вкусов в массив, если его нет
-                setAppStateFlavors({
-                  flavors: allFlavors,
-                });
-              }
-            });
-        });
-      });
-  }, [setAppColdrel, setAppStateFlavors]);
   const flavorsArray = appStateFlavors.flavors ? appStateFlavors.flavors : [];
   const flavorsJson = flavorsArray.map((flavor, index) => {
     // создаем новый массив объектов
@@ -116,7 +84,7 @@ function ReqManagerCreateEdit() {
 
   useEffect(() => {
     setAppStateMisc({ loading: true });
-    axios.get(baseURL + '/reqprocessor/getMisc', customConfig).then((resp) => {
+    axios.get(baseURL + '/salesmanager/getMisc', customConfig).then((resp) => {
       const allMisc = resp.data;
       setAppStateMisc({
         loading: false,
@@ -126,7 +94,7 @@ function ReqManagerCreateEdit() {
   }, [setAppStateMisc]);
 
   useEffect(() => {
-    axios.get(baseURL + `/reqprocessor/getRequest/${reqId}`, customConfig).then((resp) => {
+    axios.get(baseURL + `/salesmanager/getRequest/${reqId}`, customConfig).then((resp) => {
       const allMisc = resp.data;
       setStoreData({
         storeData: allMisc,
@@ -134,30 +102,9 @@ function ReqManagerCreateEdit() {
     });
   }, [setStoreData]);
 
-  console.log(storeData);
-
-  const parseData = (dataString) => {
-    const dataArray = dataString.split('&');
-    const dataObject = {};
-    dataArray.forEach((data) => {
-      const [dataId, value] = data.split(':');
-      dataObject[dataId] = parseInt(value, 10);
-    });
-    return dataObject;
-  };
-
-  const flavorDataString = storeData?.storeData?.flavors || '';
-  const miscsDataString = storeData?.storeData?.miscs || '';
-
-  const flavorDataArray = parseData(flavorDataString);
-  const miscsDataArray = parseData(miscsDataString);
-
-  console.log(flavorDataArray); // Для flavors
-  console.log(miscsDataArray);
-
   useEffect(() => {
     setAppStateMisc({ loading: true });
-    axios.get(baseURL + `/reqprocessor/getMiscListStoreId/${id}`, customConfig).then((resp) => {
+    axios.get(baseURL + `/salesmanager/getMiscListStoreId/${id}`, customConfig).then((resp) => {
       const allMiscF = resp.data;
       console.log(allMiscF);
       setAppStateMiscF({
@@ -167,35 +114,6 @@ function ReqManagerCreateEdit() {
     });
   }, [setAppStateMisc]);
 
-  useEffect(() => {
-    console.log(usersName);
-    setAppStateFlavors2({ loading: true });
-    axios.get(baseURL + '/reqprocessor/getFlavors', customConfig).then((resp) => {
-      const allMisc = resp.data;
-
-      const flavorsMap = {}; // Создаем пустой объект для хранения соответствия айди и названия вкуса
-
-      // Заполняем объект соответствия айди и названия вкуса из массива setAppStateFlavors2
-      setAppStateFlavors2.misc.forEach((flavor) => {
-        flavorsMap[flavor.id] = flavor.name;
-      });
-      if (setAppStateFlavors2.misc) {
-        setAppStateFlavors2.misc.forEach((flavor) => {
-          flavorsMap[flavor.id] = flavor.name;
-        });
-      }
-      // Заменяем айди на соответствующие названия вкусов из объекта соответствия
-      const allFlavors = allMisc.map((misc) => ({
-        ...misc,
-        name: flavorsMap[misc.id],
-      }));
-
-      setAppStateFlavors({
-        flavors: allFlavors,
-      });
-    });
-  }, [setAppStateFlavors, setAppStateFlavors2]);
-
   console.log(appStateFlavors);
 
   function handleResultChange(newResult) {
@@ -204,8 +122,9 @@ function ReqManagerCreateEdit() {
   function handleResultChangeMisc(newResultMisc) {
     setResultMisc(newResultMisc);
   }
+
   console.log(resultFlavor);
-  console.log(resultMisc);
+
   const id = localStorage.getItem('selectedStore');
   const pId = localStorage.getItem('pId');
   const usersName = JSON.stringify({
@@ -227,7 +146,7 @@ function ReqManagerCreateEdit() {
     } else {
       try {
         const resp = await axios.post(
-          baseURL + '/reqprocessor/updateRequest',
+          baseURL + '/salesmanager/updateRequest',
           usersName,
           customConfig,
         );
@@ -242,7 +161,7 @@ function ReqManagerCreateEdit() {
   return (
     <div className="wrapper">
       <NavState>
-        <MainMenuReqManager />
+        <MainMenuManager />
       </NavState>
       <div className="container ">
         <div className="userAdd ">
@@ -253,17 +172,12 @@ function ReqManagerCreateEdit() {
           <h2 className="h1-text">{storeId.storeNm}</h2>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
-              <CreateFlavorss
-                setResult={handleResultChange}
-                flavorDataArray={flavorDataArray}
-                flavors={flavorsJson}></CreateFlavorss>
               <CreateMisc
                 setResultMisc={handleResultChangeMisc}
-                miscsDataArray={miscsDataArray}
                 miscss={appStateMisc.miscss}
                 miscssF={appStateMiscF.miscssF}
                 misc={1}></CreateMisc>
-              <div className="margintop mglft">
+              <div className="margintop">
                 <textarea
                   className="textarea"
                   placeholder="Комментарий к заявке"

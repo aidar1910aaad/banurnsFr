@@ -35,7 +35,7 @@ function ShowedReq(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(baseURL + `/reqprocessor/getAllUsers`, customConfig);
+        const response = await axios.get(baseURL + `/salesmanager/getAllUsers`, customConfig);
         const storesData = response.data.reduce((acc, username) => {
           acc[username.id] = username;
           return acc;

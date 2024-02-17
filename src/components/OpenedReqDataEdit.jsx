@@ -57,7 +57,8 @@ function OpenedReqDataEdit(props, handleDelete, handleShow) {
     fetchData();
   }, []);
 
-  if (!opened || opened.length === 0) return <p>Нет данных.</p>;
+  if (!opened || opened.length === 0)
+    return <p className="noData">Выберите другую торговую точку</p>;
 
   const sortedOpened = opened
     .filter((person) => person.status === 'ACTIVE')

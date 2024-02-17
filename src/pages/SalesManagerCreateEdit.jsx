@@ -44,6 +44,21 @@ function ReqManagerCreateEdit() {
 
   const reqId = localStorage.getItem('reqId');
 
+  const [storeId, setStoreId] = useState({
+    storeNm: null,
+  });
+  const idStore = localStorage.getItem('selectedStore');
+
+  useEffect(() => {
+    setAppStateMisc({ loading: true });
+    axios.get(baseURL + `/salesmanager/getStoreName/${idStore}`, customConfig).then((resp) => {
+      const storeName = resp.data;
+      setStoreId({
+        storeNm: storeName,
+      });
+    });
+  }, [setAppStateMisc]);
+
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -183,6 +198,8 @@ function ReqManagerCreateEdit() {
     setResultMisc(newResultMisc);
   }
 
+  console.log(resultFlavor);
+
   const id = localStorage.getItem('selectedStore');
   const pId = localStorage.getItem('pId');
   const usersName = JSON.stringify({
@@ -227,6 +244,7 @@ function ReqManagerCreateEdit() {
             <h1 className="h1-text ">Отправка заявки</h1>
           </div>
           <div className="span"></div>
+          <h2 className="h1-text">{storeId.storeNm}</h2>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
               <CreateFlavors

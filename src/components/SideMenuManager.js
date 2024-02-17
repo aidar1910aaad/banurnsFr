@@ -78,6 +78,7 @@ SideMenuManager.defaultProps = {
   children: (
     <>
       <MenuLink href="/SalesManager/Req">Создать заявку</MenuLink>
+      <MenuLink href="/SalesManager/Sended">Отправленные заявки</MenuLink>
     </>
   ),
 };

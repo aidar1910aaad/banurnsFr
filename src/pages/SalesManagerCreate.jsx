@@ -9,6 +9,8 @@ import CreateFlavors from '../components/CreateFlavors';
 import CreateMisc from '../components/CreateMisc';
 import CreateFlavorsSal from '../components/CreateFlavorsSal';
 import CreateMiscSal from '../components/CreateMiscSal';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const Button = styled.button`
   height: 55px;
@@ -28,6 +30,8 @@ function SalesManagerCreate() {
     miscss: null,
   });
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const [appStateMiscF, setAppStateMiscF] = useState({
     loading: false,
     miscssF: null,
@@ -38,10 +42,14 @@ function SalesManagerCreate() {
   console.log(resultDescription);
   const [resultFlavor, setResult] = useState('');
   const [resultMisc, setResultMisc] = useState('');
+  const [storeId, setStoreId] = useState({
+    storeNm: null,
+  });
 
   const navigate = useNavigate();
   const token = localStorage.getItem('Token');
 
+  const idStore = localStorage.getItem('selectedStore');
   const customConfig = {
     headers: {
       'Content-Type': 'application/json',
@@ -58,6 +66,18 @@ function SalesManagerCreate() {
     flavors: null,
   });
   const [appColdrel, setAppColdrel] = useState({ rels: null });
+
+  useEffect(() => {
+    setAppStateMisc({ loading: true });
+    axios.get(baseURL + `/salesmanager/getStoreName/${idStore}`, customConfig).then((resp) => {
+      const storeName = resp.data;
+      setStoreId({
+        storeNm: storeName,
+      });
+    });
+  }, [setAppStateMisc]);
+
+  console.log(storeId);
 
   useEffect(() => {
     const id = localStorage.getItem('selectedStore');
@@ -167,7 +187,7 @@ function SalesManagerCreate() {
 
     if (resultFlavor.length === 0 && resultMisc.length === 0) {
       setError('Пустая заявка');
-      alert('Пустая заявка');
+      setOpenSnackbar(true);
     } else {
       try {
         const resp = await axios.post(
@@ -176,12 +196,42 @@ function SalesManagerCreate() {
           customConfig,
         );
         console.log('Заявка успешно добавлена');
-        navigate('/SalesManager');
+
+        // Отображаем Snackbar
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          navigate('/SalesManager/ShowNow');
+        }, 3000);
       } catch (error) {
         console.log(error.resp);
       }
     }
   };
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
+  const [appState, setAppState] = useState({
+    loading: false,
+    stores: null,
+  });
+  useEffect(() => {
+    setAppState({ loading: true });
+    axios.get(baseURL + '/salesmanager/getAllStores', customConfig).then((resp) => {
+      const allstores = resp.data;
+      setAppState({
+        loading: false,
+        stores: allstores,
+      });
+      console.log(allstores);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setAppState]);
+
   return (
     <div className="wrapper">
       <NavState>
@@ -193,6 +243,7 @@ function SalesManagerCreate() {
             <h1 className="h1-text">Отправка заявки</h1>
           </div>
           <div className="span"></div>
+          <h2 className="h1-text">{storeId.storeNm}</h2>
           <div className="flexbox">
             <form onSubmit={handleSubmit}>
               <CreateFlavorsSal
@@ -217,6 +268,11 @@ function SalesManagerCreate() {
           </div>
         </div>
       </div>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <MuiAlert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          Заявка успешно отправлена, вы будете перенаправлены через 3 секунд
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 }

@@ -12,8 +12,9 @@ function CreateFlavors(props) {
   const [narrowVisible, setNarrowVisible] = useState(true);
   const [wideVisible, setWideVisible] = useState(true);
   const [flavorsJsonn, setFlavorsJson] = useState([]);
+  const [issActive, setIssActive] = useState(false);
   const [sortOrder, setSortOrder] = useState('ascending'); // Инициализируйте состояние sortOrder
-
+  const [inputs, setInputs] = useState({});
   const getQuantityById = (id) => {
     return flavorDataArray[id] || ''; // Если id есть в объекте, вернуть quantity, иначе вернуть пустую строку
   };
@@ -34,11 +35,13 @@ function CreateFlavors(props) {
 
   const toggleNarrowFlavorsVisibility = () => {
     setNarrowFlavorsVisible(!narrowFlavorsVisible);
+    setIssActive((current) => !current);
   };
 
   // Функция для переключения видимости "Широких" вкусов
   const toggleWideFlavorsVisibility = () => {
     setWideFlavorsVisible(!wideFlavorsVisible);
+    setIssActive((current) => !current);
   };
 
   useEffect(() => {
@@ -49,11 +52,25 @@ function CreateFlavors(props) {
     setResult(result);
   }, [name, setResult]);
 
-  function handleInputChange(event, index) {
-    const newInputs = [...name];
-    newInputs[index] = [index, event.target.value];
-    setName(newInputs);
-  }
+  const handleInputChange = (event, flavor) => {
+    const newValue = event.target.value;
+
+    // Обновление состояния для отображения
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [flavor]: newValue,
+    }));
+
+    // Обновление состояния для формирования запроса
+    const newNames = [...name];
+    const nameIndex = newNames.findIndex(([index]) => index === flavor);
+    if (nameIndex !== -1) {
+      newNames[nameIndex] = [flavor, newValue];
+    } else {
+      newNames.push([flavor, newValue]);
+    }
+    setName(newNames);
+  };
 
   useEffect(() => {
     setAppStateFlavors2({ loading: true });
@@ -111,10 +128,17 @@ function CreateFlavors(props) {
       sortOrder === 'ascending' ? a.popularity - b.popularity : b.popularity - a.popularity,
     );
 
+  const isNarrowFlavorsEmpty = Object.keys(narrowFlavors).length === 0;
+  const isWideFlavorsEmpty = Object.keys(wideFlavors).length === 0;
+
   if (!flavors || flavors.length === 0) return <p>Нет данных.</p>;
 
   const toggleFlavorsVisibility = () => {
     setFlavorsVisible(!flavorsVisible);
+  };
+
+  const handleClickkk = () => {
+    setIssActive((current) => !current);
   };
 
   return (
@@ -128,45 +152,18 @@ function CreateFlavors(props) {
         Введите количество в кг:{' '}
       </p>
       <div className="flexx space">
-        {/* Кнопка для "Узких" вкусов */}
-        <button
-          type="button"
-          style={{
-            backgroundColor: '#f5f5f5',
-            border: 'none',
-            width: '50%',
-            borderRadius: '4px',
-            padding: '8px 10px',
-            color: '#333',
-            cursor: 'pointer',
-            outline: 'none',
-            marginTop: '20px',
-
-            transition: 'background-color 0.3s ease',
-          }}
-          onClick={toggleNarrowFlavorsVisibility}>
-          Узкий
-        </button>
+        {!isNarrowFlavorsEmpty && (
+          <button type="button" className="butbut" onClick={toggleNarrowFlavorsVisibility}>
+            Узкий
+          </button>
+        )}
 
         {/* Кнопка для "Широких" вкусов */}
-        <button
-          type="button"
-          style={{
-            backgroundColor: '#f5f5f5',
-            border: 'none',
-            width: '50%',
-            borderRadius: '4px',
-            padding: '8px 10px',
-            marginLeft: '10px',
-            color: '#333',
-            cursor: 'pointer',
-            outline: 'none',
-            marginTop: '20px',
-            transition: 'background-color 0.3s ease',
-          }}
-          onClick={toggleWideFlavorsVisibility}>
-          Широкий
-        </button>
+        {!isWideFlavorsEmpty && (
+          <button type="button" className="butbut" onClick={toggleWideFlavorsVisibility}>
+            Широкий
+          </button>
+        )}
       </div>
       {/* Вывод "Узких" вкусов */}
       {narrowFlavorsVisible && narrowFlavors.length > 0 && (
@@ -183,6 +180,7 @@ function CreateFlavors(props) {
                   onChange={(e) => handleInputChange(e, flavor.id)}
                   type="number"
                   placeholder={getQuantityById(flavor.id)}
+                  value={inputs[flavor.id] || ''}
                 />
               </div>
               <div className="thirdSide">
@@ -208,6 +206,7 @@ function CreateFlavors(props) {
                   onChange={(e) => handleInputChange(e, flavor.id)}
                   type="number"
                   placeholder={getQuantityById(flavor.id)}
+                  value={inputs[flavor.id] || ''}
                 />
               </div>
               <div className="thirdSide">
